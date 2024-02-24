@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://ctaisndoga7m8"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_wn4up"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2bn0q"]
+
+[node name="Capsule" type="MeshInstance3D"]
+mesh = SubResource("CapsuleMesh_wn4up")
+surface_material_override/0 = SubResource("StandardMaterial3D_2bn0q")
