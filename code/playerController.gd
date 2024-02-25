@@ -2,6 +2,8 @@ extends RigidBody3D
 @export var onGroundShape:ShapeCast3D
 @export var moveForce:float=7
 @export var jumpForce:float=6.66
+@export var CamNode:Node3D
+@export var PlayerVisual:Node3D
 var onGround:bool = true
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -24,6 +26,28 @@ func _physics_process(delta):
 	#a wall or something.
 	if onGround:
 		onGround = onGround && (onGroundShape.get_collision_normal(0).y>0.5)
+	# inputting the movement.
+	
+	if Input.is_action_pressed("forward"):
+		var fvec = Vector3(-moveForce,0,0)
+		fvec = fvec.rotated(Vector3(0,1,0),CamNode.rotation.y)
+		apply_force(fvec)
+		PlayerVisual.rotation_degrees.y = CamNode.rotation_degrees.y+180
+	if Input.is_action_pressed("backward"):
+		var fvec = Vector3(moveForce,0,0)
+		fvec = fvec.rotated(Vector3(0,1,0),CamNode.rotation.y)
+		apply_force(fvec)
+		PlayerVisual.rotation_degrees.y = CamNode.rotation_degrees.y+180
+	if Input.is_action_pressed("left"):
+		var fvec = Vector3(0,0,moveForce)
+		fvec = fvec.rotated(Vector3(0,1,0),CamNode.rotation.y)
+		apply_force(fvec)
+		PlayerVisual.rotation_degrees.y = CamNode.rotation_degrees.y+180
+	if Input.is_action_pressed("right"):
+		var fvec = Vector3(0,0,-moveForce)
+		fvec = fvec.rotated(Vector3(0,1,0),CamNode.rotation.y)
+		apply_force(fvec)
+		PlayerVisual.rotation_degrees.y = CamNode.rotation_degrees.y+180
 	
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

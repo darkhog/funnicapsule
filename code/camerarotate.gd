@@ -25,7 +25,7 @@ func _process(delta):
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	else:
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	rotate_object_local(Vector3.UP,Input.get_last_mouse_velocity().x*delta*rotationstrength)
+	rotate_object_local(Vector3.UP,Input.get_last_mouse_velocity().x*delta*(rotationstrength*-1))
 	rotate_object_local(Vector3.LEFT,Input.get_last_mouse_velocity().y*delta*rotationstrength)
 	rotation.z = 0
 	rotation_degrees.x = clamp(rotation_degrees.x,minclampX,maxclampX)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://cqu6j7wde77yx"]
+[gd_scene load_steps=13 format=3 uid="uid://cqu6j7wde77yx"]
 
 [ext_resource type="PackedScene" uid="uid://ctaisndoga7m8" path="res://addons/quick_primitives/scenes/Capsule.tscn" id="1_kfg1m"]
 [ext_resource type="Script" path="res://code/playerController.gd" id="1_n1wsb"]
@@ -6,9 +6,13 @@
 [ext_resource type="Material" uid="uid://ddhmff0i136ph" path="res://materials/player.tres" id="2_xse6y"]
 [ext_resource type="Material" uid="uid://cm3667bo8x0ae" path="res://materials/player_detail.tres" id="4_2xtvh"]
 
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_ty3l1"]
+
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_kh2wg"]
 radius = 0.510251
 height = 2.07187
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_145h2"]
 
 [sub_resource type="SeparationRayShape3D" id="SeparationRayShape3D_puuw7"]
 
@@ -28,21 +32,24 @@ tonemap_mode = 2
 ssao_enabled = true
 sdfgi_enabled = true
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_145h2"]
-
 [node name="Player" type="Node3D"]
 metadata/lockCamera = true
 
-[node name="RigidBody3D" type="RigidBody3D" parent="." node_paths=PackedStringArray("onGroundShape")]
+[node name="RigidBody3D" type="RigidBody3D" parent="." node_paths=PackedStringArray("onGroundShape", "CamNode", "PlayerVisual")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.014007, 0)
 collision_layer = 128
 collision_mask = 4294967167
 axis_lock_angular_x = true
+axis_lock_angular_y = true
 axis_lock_angular_z = true
+physics_material_override = SubResource("PhysicsMaterial_ty3l1")
 can_sleep = false
 continuous_cd = true
 script = ExtResource("1_n1wsb")
 onGroundShape = NodePath("CollisionShape3D/Capsule/ShapeCast3D")
+moveForce = 16.0
+CamNode = NodePath("CollisionShape3D/SpringArm3D")
+PlayerVisual = NodePath("CollisionShape3D/Capsule")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D"]
 shape = SubResource("CapsuleShape3D_kh2wg")
@@ -53,22 +60,6 @@ skeleton = NodePath("../../..")
 surface_material_override/0 = ExtResource("2_xse6y")
 
 [node name="AudioListener3D" type="AudioListener3D" parent="RigidBody3D/CollisionShape3D/Capsule"]
-
-[node name="SpringArm3D" type="SpringArm3D" parent="RigidBody3D/CollisionShape3D/Capsule" node_paths=PackedStringArray("PlayerObj")]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
-collision_mask = 3
-shape = SubResource("SeparationRayShape3D_puuw7")
-spring_length = 4.0
-script = ExtResource("2_q1wda")
-minclampX = -69.0
-maxclampX = 42.0
-zoomStrength = 7.0
-PlayerObj = NodePath("../../../..")
-
-[node name="Camera3D" type="Camera3D" parent="RigidBody3D/CollisionShape3D/Capsule/SpringArm3D"]
-environment = SubResource("Environment_siolw")
-fov = 90.0
-near = 0.009
 
 [node name="Capsule2" parent="RigidBody3D/CollisionShape3D/Capsule" instance=ExtResource("1_kfg1m")]
 transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, -0.10726, 0.366364, 0.466358)
@@ -90,3 +81,19 @@ shape = SubResource("CapsuleShape3D_145h2")
 target_position = Vector3(0, -0.1, 0)
 max_results = 1
 collision_mask = 4294967167
+
+[node name="SpringArm3D" type="SpringArm3D" parent="RigidBody3D/CollisionShape3D" node_paths=PackedStringArray("PlayerObj")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, -0.014007, 0)
+collision_mask = 3
+shape = SubResource("SeparationRayShape3D_puuw7")
+spring_length = 4.0
+script = ExtResource("2_q1wda")
+minclampX = -69.0
+maxclampX = 42.0
+zoomStrength = 7.0
+PlayerObj = NodePath("../../..")
+
+[node name="Camera3D" type="Camera3D" parent="RigidBody3D/CollisionShape3D/SpringArm3D"]
+environment = SubResource("Environment_siolw")
+fov = 90.0
+near = 0.009
