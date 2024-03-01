@@ -73,3 +73,8 @@ jump={
 [physics]
 
 3d/run_on_separate_thread=true
+jolt_3d/collisions/areas_detect_static_bodies=true
+jolt_3d/collisions/report_all_kinematic_contacts=true
+jolt_3d/solver/velocity_iterations=20
+jolt_3d/solver/position_iterations=10
+jolt_3d/limits/max_bodies=10253

@@ -1,13 +1,13 @@
 extends RigidBody3D
 @export var onGroundShape:ShapeCast3D
 @export var moveForce:float=7
-@export var jumpForce:float=6.66
+@export var jumpForce:float=3.5
 @export var CamNode:Node3D
 @export var PlayerVisual:Node3D
 var onGround:bool = true
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	pass
 
 # fucking gdscript can't fucking convert the fucking bools to the fucking strings
 # what the actual fuck were they thinking I can't even. I am not using string
@@ -37,19 +37,22 @@ func _physics_process(delta):
 		var fvec = Vector3(moveForce,0,0)
 		fvec = fvec.rotated(Vector3(0,1,0),CamNode.rotation.y)
 		apply_force(fvec)
-		PlayerVisual.rotation_degrees.y = CamNode.rotation_degrees.y+180
+		PlayerVisual.rotation_degrees.y = CamNode.rotation_degrees.y
 	if Input.is_action_pressed("left"):
 		var fvec = Vector3(0,0,moveForce)
 		fvec = fvec.rotated(Vector3(0,1,0),CamNode.rotation.y)
 		apply_force(fvec)
-		PlayerVisual.rotation_degrees.y = CamNode.rotation_degrees.y+180
+		PlayerVisual.rotation_degrees.y = CamNode.rotation_degrees.y+270
 	if Input.is_action_pressed("right"):
 		var fvec = Vector3(0,0,-moveForce)
 		fvec = fvec.rotated(Vector3(0,1,0),CamNode.rotation.y)
 		apply_force(fvec)
-		PlayerVisual.rotation_degrees.y = CamNode.rotation_degrees.y+180
+		PlayerVisual.rotation_degrees.y = CamNode.rotation_degrees.y+90
+	# Jumpy McJump
+	if onGround:
+		if Input.is_action_pressed("jump"):
+			apply_impulse(Vector3(0,jumpForce,0))
 	
-
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	pass

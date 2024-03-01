@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://cqu6j7wde77yx"]
+[gd_scene load_steps=10 format=3 uid="uid://cqu6j7wde77yx"]
 
 [ext_resource type="PackedScene" uid="uid://ctaisndoga7m8" path="res://addons/quick_primitives/scenes/Capsule.tscn" id="1_kfg1m"]
 [ext_resource type="Script" path="res://code/playerController.gd" id="1_n1wsb"]
@@ -9,28 +9,11 @@
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_ty3l1"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_kh2wg"]
-radius = 0.510251
-height = 2.07187
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_145h2"]
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_jenem"]
+radius = 0.42
 
 [sub_resource type="SeparationRayShape3D" id="SeparationRayShape3D_puuw7"]
-
-[sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_12ufm"]
-energy_multiplier = 1.8
-
-[sub_resource type="Sky" id="Sky_yo8q5"]
-sky_material = SubResource("PhysicalSkyMaterial_12ufm")
-
-[sub_resource type="Environment" id="Environment_siolw"]
-background_mode = 2
-sky = SubResource("Sky_yo8q5")
-ambient_light_source = 3
-ambient_light_color = Color(0.631373, 0.819608, 0.913725, 1)
-reflected_light_source = 2
-tonemap_mode = 2
-ssao_enabled = true
-sdfgi_enabled = true
 
 [node name="Player" type="Node3D"]
 metadata/lockCamera = true
@@ -48,6 +31,7 @@ continuous_cd = true
 script = ExtResource("1_n1wsb")
 onGroundShape = NodePath("CollisionShape3D/Capsule/ShapeCast3D")
 moveForce = 16.0
+jumpForce = 1.25
 CamNode = NodePath("CollisionShape3D/SpringArm3D")
 PlayerVisual = NodePath("CollisionShape3D/Capsule")
 
@@ -77,7 +61,7 @@ material_override = ExtResource("4_2xtvh")
 skeleton = NodePath("../../../..")
 
 [node name="ShapeCast3D" type="ShapeCast3D" parent="RigidBody3D/CollisionShape3D/Capsule"]
-shape = SubResource("CapsuleShape3D_145h2")
+shape = SubResource("CapsuleShape3D_jenem")
 target_position = Vector3(0, -0.1, 0)
 max_results = 1
 collision_mask = 4294967167
@@ -94,6 +78,5 @@ zoomStrength = 7.0
 PlayerObj = NodePath("../../..")
 
 [node name="Camera3D" type="Camera3D" parent="RigidBody3D/CollisionShape3D/SpringArm3D"]
-environment = SubResource("Environment_siolw")
 fov = 90.0
 near = 0.009

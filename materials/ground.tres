@@ -1,7 +1,17 @@
-[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://l517br3efja2"]
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://wprf4d5k7qfh"]
 
-[ext_resource type="Shader" uid="uid://cbdjini8jolxy" path="res://materials/grnd.tres" id="1_hl2f2"]
+[ext_resource type="Texture2D" uid="uid://dwlb8b8hkxdmg" path="res://textures/noisewrap.png" id="1_gk438"]
 
 [resource]
-render_priority = 0
-shader = ExtResource("1_hl2f2")
+specular_mode = 2
+albedo_color = Color(0, 0.705882, 0, 1)
+albedo_texture = ExtResource("1_gk438")
+metallic_specular = 0.0
+metallic_texture_channel = 4
+roughness_texture_channel = 4
+normal_scale = 2.54
+normal_texture = ExtResource("1_gk438")
+ao_light_affect = 0.16
+ao_texture_channel = 4
+uv1_triplanar = true
+grow_amount = 0.512
