@@ -2,8 +2,11 @@ extends RigidBody3D
 @export var onGroundShape:ShapeCast3D
 @export var moveForce:float=7
 @export var jumpForce:float=3.5
+@export var PlayerDampWhenNoInput:float = 12;
 @export var CamNode:Node3D
 @export var PlayerVisual:Node3D
+@export var ExtraJumpsZeroBased:int = 1
+var InternalJumpCount:int
 var onGround:bool = true
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -50,9 +53,19 @@ func _physics_process(delta):
 		PlayerVisual.rotation_degrees.y = CamNode.rotation_degrees.y+90
 	# Jumpy McJump
 	if onGround:
-		if Input.is_action_pressed("jump"):
+		InternalJumpCount = ExtraJumpsZeroBased
+		if Input.is_action_just_pressed("jump"):
 			apply_impulse(Vector3(0,jumpForce,0))
-	
+	#multijump
+	if !onGround && InternalJumpCount>0:
+		if Input.is_action_just_pressed("jump"):
+			InternalJumpCount-=1
+			apply_impulse(Vector3(0,jumpForce,0))
+	#setting the dampening.
+	if (onGround) && !(Input.is_action_pressed("jump")) && !(Input.is_action_pressed("left")) && !(Input.is_action_pressed("right")) && !(Input.is_action_pressed("forward")) && !(Input.is_action_pressed("backward")):
+		linear_damp = PlayerDampWhenNoInput
+	else:
+		linear_damp = ProjectSettings.get_setting("physics/3d/default_linear_damp",0.1)
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	pass

@@ -2,3 +2,7 @@
 .godot/
 *.TMP
 *.tmp
+
+#no do not.
+levels/
+voices/
