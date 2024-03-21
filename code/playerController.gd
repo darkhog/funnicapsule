@@ -33,24 +33,24 @@ func _physics_process(delta):
 	
 	if Input.is_action_pressed("forward"):
 		var fvec = Vector3(-moveForce,0,0)
-		fvec = fvec.rotated(Vector3(0,1,0),CamNode.rotation.y)
+		fvec = fvec.rotated(Vector3(0,1,0),deg_to_rad(CamNode.global_rotation_degrees.y+270))
 		apply_force(fvec)
-		PlayerVisual.rotation_degrees.y = CamNode.rotation_degrees.y+180
+		PlayerVisual.global_rotation_degrees.y = CamNode.global_rotation_degrees.y+180
 	if Input.is_action_pressed("backward"):
 		var fvec = Vector3(moveForce,0,0)
-		fvec = fvec.rotated(Vector3(0,1,0),CamNode.rotation.y)
+		fvec = fvec.rotated(Vector3(0,1,0),deg_to_rad(CamNode.global_rotation_degrees.y+270))
 		apply_force(fvec)
-		PlayerVisual.rotation_degrees.y = CamNode.rotation_degrees.y
+		PlayerVisual.global_rotation_degrees.y = CamNode.global_rotation_degrees.y
 	if Input.is_action_pressed("left"):
 		var fvec = Vector3(0,0,moveForce)
-		fvec = fvec.rotated(Vector3(0,1,0),CamNode.rotation.y)
+		fvec = fvec.rotated(Vector3(0,1,0),deg_to_rad(CamNode.global_rotation_degrees.y+270))
 		apply_force(fvec)
-		PlayerVisual.rotation_degrees.y = CamNode.rotation_degrees.y+270
+		PlayerVisual.global_rotation_degrees.y = CamNode.global_rotation_degrees.y+270
 	if Input.is_action_pressed("right"):
 		var fvec = Vector3(0,0,-moveForce)
-		fvec = fvec.rotated(Vector3(0,1,0),CamNode.rotation.y)
+		fvec = fvec.rotated(Vector3(0,1,0),deg_to_rad(CamNode.global_rotation_degrees.y+270))
 		apply_force(fvec)
-		PlayerVisual.rotation_degrees.y = CamNode.rotation_degrees.y+90
+		PlayerVisual.global_rotation_degrees.y = CamNode.global_rotation_degrees.y+90
 	# Jumpy McJump
 	if onGround:
 		InternalJumpCount = ExtraJumpsZeroBased

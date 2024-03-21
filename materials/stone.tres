@@ -1,0 +1,16 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://bjgvthk6fl1fu"]
+
+[ext_resource type="Texture2D" uid="uid://bmtka5yuer5gq" path="res://textures/noisewrap.png" id="1_4y21g"]
+
+[resource]
+diffuse_mode = 1
+specular_mode = 2
+albedo_color = Color(0.278431, 0.278431, 0.278431, 1)
+albedo_texture = ExtResource("1_4y21g")
+metallic_specular = 0.0
+normal_scale = 2.54
+normal_texture = ExtResource("1_4y21g")
+ao_light_affect = 0.16
+ao_texture_channel = 4
+uv1_triplanar = true
+grow_amount = 0.512
