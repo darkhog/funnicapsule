@@ -21,16 +21,7 @@ func boolToString (b:bool):
 		return "true"
 	else:
 		return "false"
-
-func _physics_process(delta):
-	#basic ground check
-	onGround = !onGroundShape.collision_result.is_empty()
-	#checking ground normal to ensure we can jump and it's not a fake signal from
-	#a wall or something.
-	if onGround:
-		onGround = onGround && (onGroundShape.get_collision_normal(0).y>0.5)
-	# inputting the movement.
-	
+func movement_handle():
 	if Input.is_action_pressed("forward"):
 		var fvec = Vector3(-moveForce,0,0)
 		fvec = fvec.rotated(Vector3(0,1,0),deg_to_rad(CamNode.global_rotation_degrees.y+270))
@@ -51,6 +42,17 @@ func _physics_process(delta):
 		fvec = fvec.rotated(Vector3(0,1,0),deg_to_rad(CamNode.global_rotation_degrees.y+270))
 		apply_force(fvec)
 		PlayerVisual.global_rotation_degrees.y = CamNode.global_rotation_degrees.y+90
+
+func _physics_process(delta):
+	#basic ground check
+	onGround = !onGroundShape.collision_result.is_empty()
+	#checking ground normal to ensure we can jump and it's not a fake signal from
+	#a wall or something.
+	if onGround:
+		onGround = onGround && (onGroundShape.get_collision_normal(0).y>0.7)
+	# inputting the movement.
+	movement_handle()
+	
 	# Jumpy McJump
 	if onGround:
 		InternalJumpCount = ExtraJumpsZeroBased

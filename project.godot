@@ -11,8 +11,9 @@ config_version=5
 [application]
 
 config/name="funni capsule"
-run/main_scene="res://test.tscn"
+run/main_scene="res://Menu.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
+boot_splash/bg_color=Color(0.141176, 0.141176, 0.141176, 0)
 config/icon="res://icon.svg"
 
 [autoload]
@@ -78,3 +79,14 @@ jolt_3d/collisions/report_all_kinematic_contacts=true
 jolt_3d/solver/velocity_iterations=20
 jolt_3d/solver/position_iterations=10
 jolt_3d/limits/max_bodies=10253
+
+[rendering]
+
+textures/canvas_textures/default_texture_filter=0
+lights_and_shadows/positional_shadow/soft_shadow_filter_quality=3
+anti_aliasing/screen_space_roughness_limiter/amount=2.0
+anti_aliasing/screen_space_roughness_limiter/limit=1.0
+textures/decals/filter=0
+textures/light_projectors/filter=0
+anti_aliasing/quality/msaa_2d=2
+anti_aliasing/quality/msaa_3d=3

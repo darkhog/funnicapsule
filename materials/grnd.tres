@@ -1,6 +1,6 @@
 [gd_resource type="VisualShader" load_steps=8 format=3 uid="uid://cbdjini8jolxy"]
 
-[ext_resource type="Texture2D" uid="uid://dwlb8b8hkxdmg" path="res://textures/noisewrap.png" id="1_i113b"]
+[ext_resource type="Texture2D" uid="uid://qslccg0u8ejw" path="res://textures/noisewrap.png" id="1_i113b"]
 
 [sub_resource type="VisualShaderNodeUVFunc" id="VisualShaderNodeUVFunc_uo7gs"]
 default_input_values = [1, Vector2(4, 4), 2, Vector2(0, 0)]
