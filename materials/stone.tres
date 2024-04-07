@@ -12,6 +12,7 @@ normal_scale = 2.54
 normal_texture = ExtResource("1_4y21g")
 ao_light_affect = 0.16
 ao_texture_channel = 4
+uv1_scale = Vector3(0.25, 0.25, 0.25)
 uv1_triplanar = true
 texture_filter = 4
 grow_amount = 0.512

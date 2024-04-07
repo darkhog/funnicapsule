@@ -3,16 +3,17 @@
 [ext_resource type="Texture2D" uid="uid://qslccg0u8ejw" path="res://textures/noisewrap.png" id="1_nd8eu"]
 
 [resource]
-diffuse_mode = 1
-specular_mode = 2
 albedo_color = Color(0.384314, 0.223529, 0.0980392, 1)
 albedo_texture = ExtResource("1_nd8eu")
-metallic_specular = 0.0
+metallic_specular = 0.27
 normal_scale = 2.54
 normal_texture = ExtResource("1_nd8eu")
+clearcoat = 0.16
+clearcoat_roughness = 1.0
+ao_enabled = true
 ao_light_affect = 0.16
 ao_texture_channel = 4
-uv1_triplanar = true
+uv1_scale = Vector3(0.25, 0.25, 0.25)
 texture_filter = 4
 grow_amount = 0.512
 distance_fade_mode = 2

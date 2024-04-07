@@ -250,3 +250,7 @@ func select_face(face_idx:int, select_type:Selection.Type = Selection.Type.REPLA
 		control_mesh.faces[face_idx].selected = !control_mesh.faces[face_idx].selected
 
 	mesh_changed.emit()
+
+
+func _on_area_3d_body_entered(body):
+	pass # Replace with function body.
