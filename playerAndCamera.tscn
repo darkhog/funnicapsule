@@ -70,6 +70,7 @@ collision_mask = 4294967167
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
 collision_mask = 3
 spring_length = 4.0
+margin = 0.1
 script = ExtResource("2_q1wda")
 minclampX = -69.0
 maxclampX = 35.0
@@ -77,6 +78,7 @@ zoomStrength = 7.0
 PlayerObj = NodePath("../../..")
 
 [node name="Camera3D" type="Camera3D" parent="PlayerBody/CollisionShape3D/SpringArm3D"]
-fov = 90.0
+keep_aspect = 0
+fov = 99.0
 near = 0.009
 far = 1600.0
