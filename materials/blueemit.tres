@@ -5,6 +5,7 @@ diffuse_mode = 2
 emission_enabled = true
 emission = Color(0, 0.321569, 1, 1)
 emission_energy_multiplier = 6.66
+emission_intensity = 72200.0
 emission_on_uv2 = true
 clearcoat = 0.46
 clearcoat_roughness = 0.53
