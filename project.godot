@@ -21,6 +21,7 @@ boot_splash/minimum_display_time=5000
 [autoload]
 
 CyclopsAutoload="*res://addons/cyclops_level_builder/cyclops_global_scene.tscn"
+Bitops="*res://code/bitops.gd"
 
 [display]
 

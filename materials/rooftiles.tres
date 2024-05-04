@@ -1,0 +1,22 @@
+[gd_resource type="StandardMaterial3D" load_steps=3 format=3 uid="uid://d6shi6kfxp6n"]
+
+[ext_resource type="Texture2D" uid="uid://cn1q5fojaovjg" path="res://textures/rooftiles.png" id="1_phmad"]
+[ext_resource type="Texture2D" uid="uid://qslccg0u8ejw" path="res://textures/noisewrap.png" id="2_dnpxl"]
+
+[resource]
+specular_mode = 2
+albedo_color = Color(0.450648, 0.450648, 0.450648, 1)
+albedo_texture = ExtResource("1_phmad")
+metallic_specular = 0.0
+normal_scale = 2.54
+normal_texture = ExtResource("2_dnpxl")
+ao_enabled = true
+ao_light_affect = 0.16
+ao_on_uv2 = true
+ao_texture_channel = 4
+uv1_scale = Vector3(0.25, 0.25, 0.25)
+texture_filter = 4
+grow_amount = 0.512
+distance_fade_mode = 2
+distance_fade_min_distance = 1400.0
+distance_fade_max_distance = 420.0
