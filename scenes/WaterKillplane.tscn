@@ -1,0 +1,25 @@
+[gd_scene load_steps=5 format=3 uid="uid://b6jyyob6i0dnu"]
+
+[ext_resource type="Material" uid="uid://wqtx12p38kfq" path="res://materials/water.tres" id="1_snk8u"]
+[ext_resource type="Script" path="res://code/killplane.gd" id="2_lk1bk"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_3dirk"]
+material = ExtResource("1_snk8u")
+size = Vector2(666, 666)
+subdivide_width = 192
+subdivide_depth = 197
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_fc0ui"]
+
+[node name="WaterKillplane" type="MeshInstance3D"]
+mesh = SubResource("PlaneMesh_3dirk")
+
+[node name="Area3D" type="Area3D" parent="."]
+collision_layer = 4
+collision_mask = 128
+script = ExtResource("2_lk1bk")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+shape = SubResource("WorldBoundaryShape3D_fc0ui")
+
+[connection signal="body_entered" from="Area3D" to="Area3D" method="_on_body_entered"]

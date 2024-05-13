@@ -1,7 +1,8 @@
-[gd_scene load_steps=9 format=3 uid="uid://cqu6j7wde77yx"]
+[gd_scene load_steps=10 format=3 uid="uid://cqu6j7wde77yx"]
 
 [ext_resource type="PackedScene" uid="uid://ctaisndoga7m8" path="res://addons/quick_primitives/scenes/Capsule.tscn" id="1_kfg1m"]
 [ext_resource type="Script" path="res://code/playerController.gd" id="1_n1wsb"]
+[ext_resource type="AudioStream" uid="uid://cmx8ot70pqptx" path="res://voices/deathscream.ogg" id="2_l8cue"]
 [ext_resource type="Script" path="res://code/camerarotate.gd" id="2_q1wda"]
 [ext_resource type="Material" uid="uid://ddhmff0i136ph" path="res://materials/player.tres" id="2_xse6y"]
 [ext_resource type="Material" uid="uid://cm3667bo8x0ae" path="res://materials/player_detail.tres" id="4_2xtvh"]
@@ -17,7 +18,7 @@ radius = 0.42
 [node name="Player" type="Node3D"]
 metadata/lockCamera = true
 
-[node name="PlayerBody" type="RigidBody3D" parent="." node_paths=PackedStringArray("onGroundShape", "CamNode", "PlayerVisual")]
+[node name="PlayerBody" type="RigidBody3D" parent="." node_paths=PackedStringArray("onGroundShape", "CamNode", "PlayerVisual", "DeathAudioPlayer")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.014007, 0)
 collision_layer = 128
 collision_mask = 4294967167
@@ -34,6 +35,8 @@ moveForce = 160.0
 jumpForce = 69.0
 CamNode = NodePath("CollisionShape3D/SpringArm3D")
 PlayerVisual = NodePath("CollisionShape3D/Capsule")
+DeathAudioPlayer = NodePath("DeathScream")
+DeathSound = ExtResource("2_l8cue")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerBody"]
 shape = SubResource("CapsuleShape3D_kh2wg")
@@ -73,7 +76,7 @@ spring_length = 4.0
 margin = 0.1
 script = ExtResource("2_q1wda")
 minclampX = -69.0
-maxclampX = 35.0
+maxclampX = 5.0
 zoomStrength = 7.0
 PlayerObj = NodePath("../../..")
 
@@ -82,3 +85,5 @@ keep_aspect = 0
 fov = 99.0
 near = 0.009
 far = 1600.0
+
+[node name="DeathScream" type="AudioStreamPlayer" parent="PlayerBody"]

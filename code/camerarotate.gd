@@ -8,7 +8,8 @@ extends SpringArm3D
 @export var PlayerObj:Node3D
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass
+	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_RESIZE_DISABLED, true)
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 # ##############################################################################
 # NOTE FROM THE DEVELOPER: Look at this shit. Look. At.
 # This. Shit. Any stupid kid could maintain it. I hate it.
@@ -21,18 +22,18 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	if PlayerObj.get_meta("lockCamera",true):
+	if Globals.lockCamera:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		rotate_object_local(Vector3.UP,Input.get_last_mouse_velocity().x*delta*(rotationstrength*-1))
+		rotate_object_local(Vector3.LEFT,Input.get_last_mouse_velocity().y*delta*rotationstrength)
+		rotation.z = 0
+		rotation_degrees.x = clamp(rotation_degrees.x,minclampX,maxclampX)
+		var scrolldelta:float = 0
+		if Input.is_action_just_released("CameraZoomIn"):
+			scrolldelta = scrolldelta-1
+		if Input.is_action_just_released("CameraZoomOut"):
+			scrolldelta = scrolldelta+1
+		spring_length = spring_length + (scrolldelta*delta*zoomStrength)
+		spring_length = clamp(spring_length,minspringlen,maxspringlen)
 	else:
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	rotate_object_local(Vector3.UP,Input.get_last_mouse_velocity().x*delta*(rotationstrength*-1))
-	rotate_object_local(Vector3.LEFT,Input.get_last_mouse_velocity().y*delta*rotationstrength)
-	rotation.z = 0
-	rotation_degrees.x = clamp(rotation_degrees.x,minclampX,maxclampX)
-	var scrolldelta:float = 0
-	if Input.is_action_just_released("CameraZoomIn"):
-		scrolldelta = scrolldelta-1
-	if Input.is_action_just_released("CameraZoomOut"):
-		scrolldelta = scrolldelta+1
-	spring_length = spring_length + (scrolldelta*delta*zoomStrength)
-	spring_length = clamp(spring_length,minspringlen,maxspringlen)

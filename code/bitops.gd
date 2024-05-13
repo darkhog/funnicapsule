@@ -1,4 +1,4 @@
-extends Object
+extends Node
 
 # Check if a bit is set
 static func isFlagSet(num: int, bit: int) -> bool:

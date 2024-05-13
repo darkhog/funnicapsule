@@ -1,38 +1,24 @@
-[gd_resource type="Environment" load_steps=6 format=3 uid="uid://cucmnnluvq3ix"]
+[gd_resource type="Environment" load_steps=4 format=3 uid="uid://cucmnnluvq3ix"]
 
-[sub_resource type="Gradient" id="Gradient_ymlcf"]
-colors = PackedColorArray(0.18, 0.18, 0.18, 1, 1, 1, 1, 1)
+[ext_resource type="Texture2D" uid="uid://bs0yit460fgfs" path="res://textures/resonantcloud.tres" id="1_jboph"]
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_y57v2"]
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_fro0g"]
-width = 2048
-height = 2048
-seamless = true
-seamless_blend_skirt = 0.408
-color_ramp = SubResource("Gradient_ymlcf")
-noise = SubResource("FastNoiseLite_y57v2")
-
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_l03ya"]
-sky_top_color = Color(0.294118, 0.392157, 0.870588, 1)
-sky_horizon_color = Color(0.596078, 0.65098, 0.815686, 1)
-sky_curve = 0.0675938
-sky_cover = SubResource("NoiseTexture2D_fro0g")
-ground_bottom_color = Color(0, 0, 0, 1)
-ground_horizon_color = Color(0.580392, 0.647059, 0.854902, 1)
-sun_angle_max = 68.92
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_o3ac3"]
+sky_top_color = Color(0.03, 0.207833, 1, 1)
+sky_horizon_color = Color(0.680887, 0.825518, 0.908612, 1)
+sky_curve = 0.0375
+sky_cover = ExtResource("1_jboph")
+ground_bottom_color = Color(0.0608862, 0.209543, 0.0992532, 1)
+sun_angle_max = 10.36
 
 [sub_resource type="Sky" id="Sky_yo8q5"]
-sky_material = SubResource("ProceduralSkyMaterial_l03ya")
+sky_material = SubResource("ProceduralSkyMaterial_o3ac3")
 process_mode = 3
-radiance_size = 4
 
 [resource]
 background_mode = 2
 sky = SubResource("Sky_yo8q5")
 ambient_light_color = Color(0.631373, 0.819608, 0.913725, 1)
 ambient_light_sky_contribution = 0.22
-reflected_light_source = 1
 tonemap_mode = 2
 ssr_enabled = true
 ssao_enabled = true
@@ -42,13 +28,13 @@ ssao_detail = 1.66
 ssao_light_affect = 0.34
 ssao_ao_channel_affect = 0.55
 ssil_enabled = true
-ssil_radius = 16.0
 ssil_sharpness = 1.0
 sdfgi_enabled = true
 sdfgi_use_occlusion = true
 sdfgi_bounce_feedback = 0.72
 sdfgi_cascades = 8
 sdfgi_min_cell_size = 0.0854492
+glow_normalized = true
 glow_bloom = 0.06
 volumetric_fog_density = 0.018
 volumetric_fog_gi_inject = 1.05

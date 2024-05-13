@@ -22,14 +22,15 @@ boot_splash/minimum_display_time=5000
 
 CyclopsAutoload="*res://addons/cyclops_level_builder/cyclops_global_scene.tscn"
 Bitops="*res://code/bitops.gd"
+Globals="*res://code/globals.gd"
 
 [display]
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
 window/size/mode=3
-window/size/resizable=false
 window/size/borderless=true
+window/size/extend_to_title=true
 
 [dotnet]
 

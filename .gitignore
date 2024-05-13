@@ -3,6 +3,7 @@
 *.TMP
 *.tmp
 
-#no do not.
-levels/
-voices/
+#no do not
+sacredlevels/
+sacredcode/
+sacredvoices/

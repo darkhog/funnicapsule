@@ -1,0 +1,11 @@
+[gd_resource type="CameraAttributesPhysical" format=3 uid="uid://ct5lul5r1be2q"]
+
+[resource]
+exposure_sensitivity = 666.0
+exposure_multiplier = 1.367
+auto_exposure_scale = 1.0
+auto_exposure_speed = 0.01
+frustum_focal_length = 12.22
+frustum_far = 1400.0
+auto_exposure_min_exposure_value = -16.0
+auto_exposure_max_exposure_value = 16.0

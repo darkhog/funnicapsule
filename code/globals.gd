@@ -1,4 +1,4 @@
-extends Object
+extends Node
 
 const FLAG_HASGUN = 0
 const FLAG_CUTSCENELOCK = 1
@@ -33,8 +33,16 @@ const FLAG_29 = 29
 const FLAG_30 = 30
 const FLAG_31 = 31
 
-var playerflags:int =0
-var playerHealth:float = 100
-var playername:String = "Capsule"
-var playerLives:int = 3
-var score:int = 0
+var playerflags:int
+var playerHealth:float
+var playername:String
+var playerLives:int
+var score:int
+var lockCamera:bool = true
+func ResetGame():
+	playerflags=0
+	playerHealth = 100
+	playername = "Capsule"
+	playerLives = 3
+	score = 0
+	lockCamera = true
