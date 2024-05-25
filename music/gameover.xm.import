@@ -1,0 +1,16 @@
+[remap]
+
+importer="dudejoe870.openmptimporter"
+type="AudioStreamMPT"
+uid="uid://cuekq8xt54x4m"
+path="res://.godot/imported/gameover.xm-3f3ce7e22cbf2a58a7f5b8c87706ba14.res"
+
+[deps]
+
+source_file="res://music/gameover.xm"
+dest_files=["res://.godot/imported/gameover.xm-3f3ce7e22cbf2a58a7f5b8c87706ba14.res"]
+
+[params]
+
+force/mono=false
+playback/loop_mode=1

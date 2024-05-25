@@ -1,0 +1,14 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://flhah5uec7dg"]
+
+[ext_resource type="Texture2D" uid="uid://doyqracqt2kma" path="res://textures/grimner rocks.png" id="1_gk3da"]
+
+[resource]
+specular_mode = 2
+albedo_texture = ExtResource("1_gk3da")
+albedo_texture_force_srgb = true
+metallic_specular = 0.0
+anisotropy = 0.01
+ao_enabled = true
+ao_light_affect = 0.22
+ao_on_uv2 = true
+texture_filter = 0

@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://du3evml1mjh7"]
+
+[ext_resource type="PackedScene" uid="uid://bvbspjexnvoe0" path="res://models/grimnerrocks.glb" id="1_payt8"]
+
+[node name="GrimnerRocks" type="Node3D"]
+
+[node name="grimnerrocks" parent="." instance=ExtResource("1_payt8")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -1.91626, 0, 0)
+
+[node name="grimnerrocks_2" parent="." instance=ExtResource("1_payt8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.57018, 0, 0)

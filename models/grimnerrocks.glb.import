@@ -1,0 +1,50 @@
+[remap]
+
+importer="scene"
+importer_version=1
+type="PackedScene"
+uid="uid://bvbspjexnvoe0"
+path="res://.godot/imported/grimnerrocks.glb-ba962c205b454e9d5e5d318684cac78d.scn"
+
+[deps]
+
+source_file="res://models/grimnerrocks.glb"
+dest_files=["res://.godot/imported/grimnerrocks.glb-ba962c205b454e9d5e5d318684cac78d.scn"]
+
+[params]
+
+nodes/root_type=""
+nodes/root_name=""
+nodes/apply_root_scale=true
+nodes/root_scale=1.0
+meshes/ensure_tangents=true
+meshes/generate_lods=true
+meshes/create_shadow_meshes=true
+meshes/light_baking=3
+meshes/lightmap_texel_size=0.2
+meshes/force_disable_compression=false
+skins/use_named_skins=true
+animation/import=false
+animation/fps=30
+animation/trimming=false
+animation/remove_immutable_tracks=true
+import_script/path=""
+_subresources={
+"materials": {
+"Material": {
+"use_external/enabled": true,
+"use_external/path": "res://materials/grimnerrocks.tres"
+}
+},
+"nodes": {
+"PATH:Sphere": {
+"generate/physics": true,
+"mesh_instance/visibility_range_end": 1400.0,
+"mesh_instance/visibility_range_end_margin": 20.28,
+"mesh_instance/visibility_range_fade_mode": 1,
+"physics/shape_type": 1
+}
+}
+}
+gltf/naming_version=1
+gltf/embedded_image_handling=1

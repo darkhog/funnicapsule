@@ -90,6 +90,7 @@ func die():
 		DeathAudioPlayer.stream = DeathSound
 		DeathAudioPlayer.play()
 		scheduleDeath = true
+		Globals.lockCamera = false
 	else:
 		respawn()
 #handles resetting the player health and decreasing lives.
@@ -99,11 +100,13 @@ func respawn():
 	if Globals.playerLives<0:
 		GameOver()
 	else:
+		Globals.lockCamera=true
 		get_tree().reload_current_scene()
 #Game Over, man. Game over.
 func GameOver():
-	#TODO Add a proper gameover scene. For now it just goes back to the menu.
-	get_tree().change_scene_to_file("res://Menu.tscn")
+	
+	Globals.lockCamera = true
+	get_tree().change_scene_to_file("res://scenes/GameOver.tscn")
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
 	if scheduleDeath:

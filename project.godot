@@ -45,7 +45,7 @@ version_control/autoload_on_startup=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/anthonyec.camera_preview/plugin.cfg", "res://addons/asset_dock/plugin.cfg", "res://addons/cyclops_level_builder/plugin.cfg")
+enabled=PackedStringArray("res://addons/anthonyec.camera_preview/plugin.cfg", "res://addons/asset_dock/plugin.cfg", "res://addons/cyclops_level_builder/plugin.cfg", "res://addons/godot-openmpt/plugin.cfg")
 
 [input]
 
@@ -114,7 +114,7 @@ global_illumination/voxel_gi/quality=1
 camera/depth_of_field/depth_of_field_bokeh_shape=0
 anti_aliasing/screen_space_roughness_limiter/amount=2.0
 anti_aliasing/screen_space_roughness_limiter/limit=1.0
-textures/decals/filter=0
+textures/decals/filter=5
 textures/light_projectors/filter=0
 global_illumination/sdfgi/probe_ray_count=3
 global_illumination/sdfgi/frames_to_converge=2

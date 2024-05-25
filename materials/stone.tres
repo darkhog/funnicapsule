@@ -4,7 +4,7 @@
 
 [resource]
 specular_mode = 2
-albedo_color = Color(0.278431, 0.278431, 0.278431, 1)
+albedo_color = Color(0.355314, 0.355314, 0.355314, 1)
 albedo_texture = ExtResource("1_4y21g")
 metallic_specular = 0.0
 metallic_texture_channel = 4

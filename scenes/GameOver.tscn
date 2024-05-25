@@ -1,0 +1,98 @@
+[gd_scene load_steps=9 format=3 uid="uid://brpb624c01bd5"]
+
+[ext_resource type="Script" path="res://scenes/AnimationPlayer.gd" id="1_gib1t"]
+[ext_resource type="AudioStream" uid="uid://cuekq8xt54x4m" path="res://music/gameover.xm" id="2_lw3ro"]
+[ext_resource type="Script" path="res://code/GameOverHandle.gd" id="3_4ydmf"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_16r1j"]
+font_size = 276
+font_color = Color(0, 0, 0, 1)
+
+[sub_resource type="Animation" id="Animation_ditcl"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0759659]
+}
+
+[sub_resource type="Animation" id="Animation_3sdum"]
+resource_name = "Rotatil"
+length = 2.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5, 1),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [-0.560251, 0.0, 0.560251]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_hhxce"]
+_data = {
+"RESET": SubResource("Animation_ditcl"),
+"Rotatil": SubResource("Animation_3sdum")
+}
+
+[sub_resource type="LabelSettings" id="LabelSettings_xornn"]
+font_size = 76
+font_color = Color(0, 0, 0, 1)
+
+[node name="Node2D" type="Node2D"]
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -980.0
+offset_top = -550.0
+offset_right = 985.0
+offset_bottom = 558.0
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="Label" type="Label" parent="."]
+offset_left = -791.0
+offset_top = -265.0
+offset_right = 791.0
+offset_bottom = 111.0
+rotation = 0.0759659
+pivot_offset = Vector2(791, 188)
+text = "GAME OVER"
+label_settings = SubResource("LabelSettings_16r1j")
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Label"]
+deterministic = true
+libraries = {
+"": SubResource("AnimationLibrary_hhxce")
+}
+script = ExtResource("1_gib1t")
+
+[node name="AudioListener2D" type="AudioListener2D" parent="."]
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_lw3ro")
+volume_db = 6.71
+autoplay = true
+
+[node name="Label_2" type="Label" parent="."]
+offset_left = -958.0
+offset_top = 371.0
+offset_right = 956.0
+offset_bottom = 537.0
+text = "Press [space] to return to menu, [End] to quit"
+label_settings = SubResource("LabelSettings_xornn")
+horizontal_alignment = 1
+vertical_alignment = 2
+script = ExtResource("3_4ydmf")

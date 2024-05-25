@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://bk36h052lin3j"]
+
+[ext_resource type="Texture2D" uid="uid://c4ncsp30qrefv" path="res://textures/fbi.png" id="1_574oc"]
+
+[node name="TheMouseSays" type="Decal"]
+transform = Transform3D(0.733315, -0.67989, -3.55271e-15, 2.97189e-08, 3.20542e-08, -1, 0.67989, 0.733315, 4.37114e-08, 118.887, 13.1495, -142.686)
+size = Vector3(4.8, 1.637, 8)
+texture_albedo = ExtResource("1_574oc")
+upper_fade = 0.0430762
+lower_fade = 0.0374999
+cull_mask = 1048447
