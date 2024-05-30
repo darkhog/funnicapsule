@@ -2,7 +2,7 @@ extends RigidBody3D
 @export var onGroundShape:ShapeCast3D
 @export var moveForce:float=7
 @export var jumpForce:float=3.5
-@export var PlayerDampWhenNoInput:float = 12;
+@export var GroundDampeningFactor:float = 4;
 @export var CamNode:Node3D
 @export var PlayerVisual:Node3D
 @export var ExtraJumpsZeroBased:int = 1
@@ -14,6 +14,7 @@ extends RigidBody3D
 var InternalJumpCount:int
 var onGround:bool = true
 var scheduleDeath:bool=false
+var hasRecentlyMoved:bool=false
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass
@@ -27,31 +28,29 @@ func boolToString (b:bool):
 		return "true"
 	else:
 		return "false"
+
+func applyPlayerForces(mforce:Vector3,visualAngleAdjustment:float):
+	var fvec = mforce.rotated(Vector3(0,1,0),deg_to_rad(CamNode.global_rotation_degrees.y+270))
+	apply_force(fvec)
+	PlayerVisual.global_rotation_degrees.y = CamNode.global_rotation_degrees.y+visualAngleAdjustment
+	hasRecentlyMoved = true
+
 func movement_handle():
+	if !(onGround):
+		hasRecentlyMoved = true
 	if scheduleDeath:
 		if DeathAudioPlayer.get_playback_position()>0.09:
 			freeze=true
 		return
 	if Input.is_action_pressed("forward"):
-		var fvec = Vector3(-moveForce,0,0)
-		fvec = fvec.rotated(Vector3(0,1,0),deg_to_rad(CamNode.global_rotation_degrees.y+270))
-		apply_force(fvec)
-		PlayerVisual.global_rotation_degrees.y = CamNode.global_rotation_degrees.y+180
+		applyPlayerForces(Vector3(-moveForce,0,0),180)
 	if Input.is_action_pressed("backward"):
-		var fvec = Vector3(moveForce,0,0)
-		fvec = fvec.rotated(Vector3(0,1,0),deg_to_rad(CamNode.global_rotation_degrees.y+270))
-		apply_force(fvec)
-		PlayerVisual.global_rotation_degrees.y = CamNode.global_rotation_degrees.y
+		applyPlayerForces(Vector3(moveForce,0,0),0)
 	if Input.is_action_pressed("left"):
-		var fvec = Vector3(0,0,moveForce)
-		fvec = fvec.rotated(Vector3(0,1,0),deg_to_rad(CamNode.global_rotation_degrees.y+270))
-		apply_force(fvec)
-		PlayerVisual.global_rotation_degrees.y = CamNode.global_rotation_degrees.y+270
+		applyPlayerForces(Vector3(0,0,moveForce),270)
+		hasRecentlyMoved = true
 	if Input.is_action_pressed("right"):
-		var fvec = Vector3(0,0,-moveForce)
-		fvec = fvec.rotated(Vector3(0,1,0),deg_to_rad(CamNode.global_rotation_degrees.y+270))
-		apply_force(fvec)
-		PlayerVisual.global_rotation_degrees.y = CamNode.global_rotation_degrees.y+90
+		applyPlayerForces(Vector3(0,0,-moveForce),90)
 	# Jumpy McJump
 	if onGround:
 		InternalJumpCount = ExtraJumpsZeroBased
@@ -76,10 +75,12 @@ func _physics_process(_delta):
 	
 	
 	#setting the dampening.
-	if (onGround) && !(Input.is_action_pressed("jump")) && !(Input.is_action_pressed("left")) && !(Input.is_action_pressed("right")) && !(Input.is_action_pressed("forward")) && !(Input.is_action_pressed("backward")):
-		linear_damp = PlayerDampWhenNoInput
-	else:
-		linear_damp = ProjectSettings.get_setting("physics/3d/default_linear_damp",0.1)
+	if (hasRecentlyMoved) && (onGround) && !(Input.is_action_pressed("jump")) && !(Input.is_action_pressed("left")) && !(Input.is_action_pressed("right")) && !(Input.is_action_pressed("forward")) && !(Input.is_action_pressed("backward")):
+		set_axis_velocity(Vector3(linear_velocity.x/GroundDampeningFactor,linear_velocity.y,linear_velocity.z/GroundDampeningFactor))
+		hasRecentlyMoved = false
+		
+	#else:
+		#linear_damp = ProjectSettings.get_setting("physics/3d/default_linear_damp",0.1)
 func hurtPlayer(amount:float):
 	Globals.playerHealth-=amount
 	if Globals.playerHealth<=0:

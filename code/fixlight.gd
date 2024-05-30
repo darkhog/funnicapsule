@@ -1,13 +1,10 @@
-extends DirectionalLight3D
+extends Node
 
-var fixlight:bool=false
+var we:WorldEnvironment
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	shadow_enabled=false
+	we = get_node("WorldEnvironment") as WorldEnvironment
+	we.environment.sdfgi_enabled = false
+	await get_tree().process_frame #waiting for a single frame before reenabling
+	we.environment.sdfgi_enabled = true
 
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	if !(fixlight):
-		shadow_enabled=true
-		fixlight=true
