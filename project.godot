@@ -24,8 +24,15 @@ boot_splash/minimum_display_time=5000
 CyclopsAutoload="*res://addons/cyclops_level_builder/cyclops_global_scene.tscn"
 Bitops="*res://code/bitops.gd"
 Globals="*res://code/globals.gd"
-BeehaveGlobalMetrics="*res://addons/beehave/metrics/beehave_global_metrics.gd"
-BeehaveGlobalDebugger="*res://addons/beehave/debug/global_debugger.gd"
+
+[debug]
+
+gdscript/warnings/untyped_declaration=1
+gdscript/warnings/inferred_declaration=1
+gdscript/warnings/unsafe_property_access=1
+gdscript/warnings/unsafe_method_access=1
+gdscript/warnings/unsafe_cast=1
+gdscript/warnings/unsafe_call_argument=1
 
 [display]
 
@@ -105,6 +112,8 @@ locale/locale_filter_mode=0
 [physics]
 
 3d/run_on_separate_thread=true
+common/physics_ticks_per_second=120
+common/physics_jitter_fix=0.0
 jolt_3d/collisions/areas_detect_static_bodies=true
 jolt_3d/collisions/report_all_kinematic_contacts=true
 jolt_3d/solver/velocity_iterations=20

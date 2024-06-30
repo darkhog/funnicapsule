@@ -66,7 +66,10 @@ func _physics_process(_delta):
 	#if onGround:
 		#onGround = onGround && (onGroundShape.get_collision_normal(0).y>0.7)
 	# inputting the movement.
-	movement_handle(onGroundShape.get_collision_normal(0).y)
+	if onGroundShape.is_colliding():
+		movement_handle(onGroundShape.get_collision_normal(0).y)
+	else:
+		movement_handle(0)
 	#Globals.DebugPrint(onGroundShape.get_collision_normal(0).y)
 	
 	

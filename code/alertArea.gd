@@ -11,7 +11,6 @@ func _on_body_entered(body:Node3D):
 		Globals.lockCamera=false
 		await get_tree().process_frame
 		await get_tree().process_frame
-		await get_tree().process_frame
 		OS.alert(text,title)
 		Globals.lockCamera=true
 		self.queue_free()
