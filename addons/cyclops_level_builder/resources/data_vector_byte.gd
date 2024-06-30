@@ -27,16 +27,31 @@ class_name DataVectorByte
 
 @export var data:PackedByteArray
 
-func _init(name:StringName = "", data:PackedByteArray = [], data_type:DataType = DataType.FLOAT, stride:int = 1):
+func _init(name:StringName = "", data:PackedByteArray = [], data_type:DataType = DataType.BOOL):
 	self.name = name
 	self.data = data
 	self.data_type = data_type
-	self.stride = stride
+	self.stride = data_type_num_components(data_type)
 
 
+func get_buffer_byte_data()->PackedByteArray:
+	return data
+
+#func to_dictionary(buffer_ar:BufferArchive)->Dictionary:
+	#var result:Dictionary = super(buffer_ar)
+	#var region:BufferArchive.BufferRegion = buffer_ar.store_buffer(data)
+	#
+##	result["data"] = Marshalls.raw_to_base64(data.compress())
+	#result["data_buffer"] = region.index
+	#
+	#return result
+	
 func get_data_format_type()->DataFormatType:
 	return DataFormatType.BYTE
 	
+func size()->int:
+	return data.size()
+
 func resize(size:int):
 	data.resize(size * stride)
 	

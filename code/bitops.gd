@@ -1,6 +1,6 @@
 extends Node
 
-# Check if a bit is set
+# Check if a bit flag is set
 static func isFlagSet(num: int, bit: int) -> bool:
 	return (num & (1 << bit)) != 0
 

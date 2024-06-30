@@ -27,14 +27,17 @@ class_name DataVectorString
 
 @export var data:PackedStringArray
 
-func _init(name:StringName = "", data:PackedStringArray = [], data_type:DataType = DataType.FLOAT, stride:int = 1):
+func _init(name:StringName = "", data:PackedStringArray = [], data_type:DataType = DataType.STRING):
 	self.name = name
 	self.data = data
 	self.data_type = data_type
-	self.stride = stride
+	self.stride = data_type_num_components(data_type)
 	
 func get_data_format_type()->DataFormatType:
 	return DataFormatType.STRING
+	
+func size()->int:
+	return data.size()
 
 func resize(size:int):
 	data.resize(size * stride)
@@ -44,3 +47,15 @@ func get_value(index:int)->String:
 
 func set_value(value:String, index:int):
 	data[index] = value
+
+func get_buffer_byte_data()->PackedByteArray:
+	return var_to_bytes(data)
+#	return data.to_byte_array()
+
+#func to_dictionary(buffer_ar:BufferArchive)->Dictionary:
+	#var result:Dictionary = super(buffer_ar)
+	#var region:BufferArchive.BufferRegion = buffer_ar.store_buffer(data.to_byte_array())
+	#
+	#result["data_buffer"] = region.index
+	#
+	#return result

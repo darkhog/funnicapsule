@@ -49,7 +49,7 @@ func _init():
 	command_name = "Add stairs"
 
 func create_block(blocks_root:Node, mat:Material)->CyclopsBlock:
-	var block:CyclopsBlock = preload("../nodes/cyclops_block.gd").new()
+	var block:CyclopsBlock = preload("res://addons/cyclops_level_builder/nodes/cyclops_block.gd").new()
 	blocks_root.add_child(block)
 	block.owner = builder.get_editor_interface().get_edited_scene_root()
 	block.name = GeneralUtil.find_unique_name(blocks_root, block_name_prefix)
@@ -128,7 +128,7 @@ func do_it():
 
 		var block:CyclopsBlock = create_block(blocks_root, material)
 
-		block.block_data = mesh.to_convex_block_data()
+		block.mesh_vector_data = mesh.to_mesh_vector_data()
 		block.global_transform = pivot_xform.affine_inverse()
 		block_paths.append(block.get_path())
 		

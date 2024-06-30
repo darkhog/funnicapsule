@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://cqu6j7wde77yx"]
+[gd_scene load_steps=14 format=3 uid="uid://cqu6j7wde77yx"]
 
 [ext_resource type="PhysicsMaterial" uid="uid://cmjo4d6fk86" path="res://materials/physicsmaterial/player.tres" id="1_7cbay"]
 [ext_resource type="PackedScene" uid="uid://ctaisndoga7m8" path="res://addons/quick_primitives/scenes/Capsule.tscn" id="1_kfg1m"]
@@ -7,16 +7,21 @@
 [ext_resource type="Script" path="res://code/camerarotate.gd" id="2_q1wda"]
 [ext_resource type="Material" uid="uid://ddhmff0i136ph" path="res://materials/player.tres" id="2_xse6y"]
 [ext_resource type="Material" uid="uid://cm3667bo8x0ae" path="res://materials/player_detail.tres" id="4_2xtvh"]
+[ext_resource type="AudioStream" uid="uid://bbjww16a20cf6" path="res://voices/jump.ogg" id="4_71htg"]
+[ext_resource type="AudioStream" uid="uid://dblxjnng7fxug" path="res://voices/dbljump.ogg" id="5_yy7rl"]
+[ext_resource type="AudioStream" uid="uid://dfggtsf3q4bmp" path="res://voices/ouch.ogg" id="6_ik0hw"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_kh2wg"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_jenem"]
-radius = 0.42
+radius = 0.45
+
+[sub_resource type="AudioStreamPolyphonic" id="AudioStreamPolyphonic_74xuo"]
 
 [node name="Player" type="Node3D"]
 metadata/lockCamera = true
 
-[node name="PlayerBody" type="RigidBody3D" parent="." node_paths=PackedStringArray("onGroundShape", "CamNode", "PlayerVisual", "DeathAudioPlayer")]
+[node name="PlayerBody" type="RigidBody3D" parent="." node_paths=PackedStringArray("onGroundShape", "CamNode", "PlayerVisual", "aPlayer")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.014007, 0)
 collision_layer = 128
 collision_mask = 4294967167
@@ -33,8 +38,11 @@ moveForce = 160.0
 jumpForce = 69.0
 CamNode = NodePath("CollisionShape3D/SpringArm3D")
 PlayerVisual = NodePath("CollisionShape3D/Capsule")
-DeathAudioPlayer = NodePath("DeathScream")
+aPlayer = NodePath("AudioPlayer")
 DeathSound = ExtResource("2_l8cue")
+JumpSound = ExtResource("4_71htg")
+DblJumpSound = ExtResource("5_yy7rl")
+HurtSound = ExtResource("6_ik0hw")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PlayerBody"]
 shape = SubResource("CapsuleShape3D_kh2wg")
@@ -63,7 +71,7 @@ skeleton = NodePath("../../../..")
 
 [node name="ShapeCast3D" type="ShapeCast3D" parent="PlayerBody/CollisionShape3D/Capsule"]
 shape = SubResource("CapsuleShape3D_jenem")
-target_position = Vector3(0, -0.1, 0)
+target_position = Vector3(0, -0.04, 0)
 max_results = 1
 collision_mask = 4294967167
 
@@ -84,4 +92,7 @@ fov = 99.0
 near = 0.009
 far = 1600.0
 
-[node name="DeathScream" type="AudioStreamPlayer" parent="PlayerBody"]
+[node name="AudioPlayer" type="AudioStreamPlayer" parent="PlayerBody"]
+stream = SubResource("AudioStreamPolyphonic_74xuo")
+autoplay = true
+max_polyphony = 10

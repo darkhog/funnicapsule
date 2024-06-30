@@ -48,10 +48,20 @@ class PickHandleResult extends RefCounted:
 	var handle:HandleFace
 	var position:Vector3
 	
+var settings:ToolEditFaceSettings = ToolEditFaceSettings.new()
+
+var average_normal:Vector3 = Vector3.UP
+
 func _get_tool_id()->String:
 	return TOOL_ID
 
-
+func _get_tool_properties_editor()->Control:
+	var ed:ToolEditFaceSettingsEditor = preload("res://addons/cyclops_level_builder/tools/tool_edit_face_settings_editor.tscn").instantiate()
+	
+	ed.settings = settings
+	
+	return ed
+	
 func draw_gizmo(viewport_camera:Camera3D):
 	var global_scene:CyclopsGlobalScene = builder.get_global_scene()
 	if !gizmo_translate:
@@ -61,6 +71,8 @@ func draw_gizmo(viewport_camera:Camera3D):
 	var count:int = 0
 	for h in handles:
 		var block:CyclopsBlock = builder.get_node(h.block_path)
+		if !block:
+			continue
 		var l2w:Transform3D = block.global_transform
 		
 		var f:ConvexVolume.FaceInfo = block.control_mesh.faces[h.face_index]
@@ -73,10 +85,33 @@ func draw_gizmo(viewport_camera:Camera3D):
 		global_scene.set_custom_gizmo(null)
 	else:
 		origin /= count
-		#print("gizmo origin ", origin)
-#		print("final origin ", origin)
 		global_scene.set_custom_gizmo(gizmo_translate)
-		gizmo_translate.global_transform.origin = origin
+#		gizmo_translate.global_transform.origin = origin
+		var active_block:Node3D = builder.get_active_block()
+		
+		gizmo_translate.global_basis = calc_gizmo_basis(average_normal, active_block, viewport_camera, settings.transform_space)
+		gizmo_translate.global_position = origin
+		#match settings.transform_space:
+			#TransformSpace.Type.GLOBAL:
+				#var xform:Transform3D = Transform3D.IDENTITY
+				#xform.origin = origin
+				#gizmo_translate.global_transform = xform
+			#TransformSpace.Type.LOCAL:
+				#var xform:Transform3D = active_block.global_transform
+				#gizmo_translate.global_transform = xform
+				#gizmo_translate.global_position = origin
+			#TransformSpace.Type.NORMAL:
+				#var up:Vector3 = Vector3.UP
+				#var x:Vector3 = up.cross(average_normal).normalized()
+				#var y:Vector3 = average_normal.cross(x)
+				#gizmo_translate.global_basis = Basis(x, y, average_normal)
+				#gizmo_translate.global_position = origin
+			#TransformSpace.Type.VIEW:
+				#gizmo_translate.global_basis = viewport_camera.global_basis
+				#gizmo_translate.global_position = origin
+			#TransformSpace.Type.PARENT:
+				#var xform:Transform3D = active_block.get_parent_node_3d().global_transform
+				#gizmo_translate.global_transform = xform
 
 
 func _draw_tool(viewport_camera:Camera3D):
@@ -122,12 +157,14 @@ func setup_tool():
 	#print("setup_tool")
 	
 	var sel_blocks:Array[CyclopsBlock] = builder.get_selected_blocks()
+	average_normal = Vector3.ZERO
+	
 	for block in sel_blocks:
 		var l2w:Transform3D = block.global_transform
-		#var w2l:Transform3D = block.global_transform.affine_inverse()
+
+		var l2w_normal:Basis = l2w.basis.transposed().inverse()
 		
 		for f_idx in block.control_mesh.faces.size():
-#					print("adding face hande %s %s" % [block.name, f_idx])
 			
 			var ctl_mesh:ConvexVolume = block.control_mesh
 			var face:ConvexVolume.FaceInfo = ctl_mesh.faces[f_idx]
@@ -138,13 +175,15 @@ func setup_tool():
 			#print("p_start %s" % p_start)
 
 			handle.p_center = p_start
-#			handle.p_ref = p_start
-#			handle.p_ref_init = p_start
 			
 			handle.face_index = f_idx
-#			handle.face_id = face.id
 			handle.block_path = block.get_path()
 			handles.append(handle)
+			
+			if face.selected:
+				average_normal += l2w_normal * face.get_area_vector_x2()
+	
+	average_normal = average_normal.normalized()
 	
 func pick_closest_handle(viewport_camera:Camera3D, position:Vector2, radius:float)->PickHandleResult:
 	
@@ -446,6 +485,7 @@ func _gui_input(viewport_camera:Camera3D, event:InputEvent)->bool:
 					
 					
 					tool_state = ToolState.NONE
+					setup_tool()
 					
 				elif tool_state == ToolState.DRAGGING:
 					#Finish drag
@@ -455,6 +495,7 @@ func _gui_input(viewport_camera:Camera3D, event:InputEvent)->bool:
 					
 					tool_state = ToolState.NONE
 					cmd_move_face = null
+					setup_tool()
 				
 
 				elif tool_state == ToolState.MOVE_HANDLES_CLICK:
@@ -542,33 +583,44 @@ func _gui_input(viewport_camera:Camera3D, event:InputEvent)->bool:
 			if !drag_handle_start_pos.is_finite():
 				#If start point set to infinite, replace with point along view ray
 				drag_handle_start_pos = origin + dir * 20
+				
+			var active_block:Node3D = builder.get_active_block()
+			var xform_basis:Basis = calc_gizmo_basis(average_normal, active_block, viewport_camera, settings.transform_space)
+			
+			#match settings.transform_space:
+				#TransformSpace.Type.GLOBAL:
+					#xform_basis = Basis.IDENTITY
+				#TransformSpace.Type.LOCAL:
+					#var active_block:Node3D = builder.get_active_block()
+					#xform_basis = active_block.basis
+				#TransformSpace.Type.NORMAL:
+					#var up:Vector3 = Vector3.UP
+					#var x:Vector3 = up.cross(average_normal).normalized()
+					#var y:Vector3 = average_normal.cross(x)
+					#xform_basis = Basis(x, y, average_normal)
+				#TransformSpace.Type.VIEW:
+					#xform_basis = viewport_camera.global_basis
+				#TransformSpace.Type.PARENT:
+					#var active_block:Node3D = builder.get_active_block().get_parent_node_3d()
+					#xform_basis = active_block.basis
 
 			var drag_to:Vector3
 			match move_constraint:
 				MoveConstraint.Type.AXIS_X:
-					drag_to = MathUtil.closest_point_on_line(origin, dir, drag_handle_start_pos, Vector3.RIGHT)
+					drag_to = MathUtil.closest_point_on_line(origin, dir, drag_handle_start_pos, xform_basis.x)
 				MoveConstraint.Type.AXIS_Y:
-					drag_to = MathUtil.closest_point_on_line(origin, dir, drag_handle_start_pos, Vector3.UP)
+					drag_to = MathUtil.closest_point_on_line(origin, dir, drag_handle_start_pos, xform_basis.y)
 				MoveConstraint.Type.AXIS_Z:
-					drag_to = MathUtil.closest_point_on_line(origin, dir, drag_handle_start_pos, Vector3.BACK)
+					drag_to = MathUtil.closest_point_on_line(origin, dir, drag_handle_start_pos, xform_basis.z)
 				MoveConstraint.Type.PLANE_XY:
-					drag_to = MathUtil.intersect_plane(origin, dir, drag_handle_start_pos, Vector3.BACK)
+					drag_to = MathUtil.intersect_plane(origin, dir, drag_handle_start_pos, xform_basis.z)
 				MoveConstraint.Type.PLANE_XZ:
-					drag_to = MathUtil.intersect_plane(origin, dir, drag_handle_start_pos, Vector3.UP)
+					drag_to = MathUtil.intersect_plane(origin, dir, drag_handle_start_pos, xform_basis.y)
 				MoveConstraint.Type.PLANE_YZ:
-					drag_to = MathUtil.intersect_plane(origin, dir, drag_handle_start_pos, Vector3.RIGHT)
+					drag_to = MathUtil.intersect_plane(origin, dir, drag_handle_start_pos, xform_basis.x)
 				MoveConstraint.Type.PLANE_VIEWPORT:
 					drag_to = MathUtil.intersect_plane(origin, dir, drag_handle_start_pos, viewport_camera.global_transform.basis.z)
 
-			#print("drag_handle_start_pos %s" % drag_handle_start_pos)
-			
-#			var drag_to:Vector3
-#			if e.alt_pressed:
-#				drag_to = MathUtil.closest_point_on_line(origin, dir, drag_handle_start_pos, Vector3.UP)
-#			else:
-#				drag_to = MathUtil.intersect_plane(origin, dir, drag_handle_start_pos, Vector3.UP)
-
-			#print("drag_to %s" % drag_to)
 			
 			var offset = drag_to - drag_handle_start_pos
 #			offset = MathUtil.snap_to_grid(offset, grid_step_size)

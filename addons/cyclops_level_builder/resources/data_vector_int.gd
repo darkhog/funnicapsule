@@ -27,14 +27,17 @@ class_name DataVectorInt
 
 @export var data:PackedInt32Array
 
-func _init(name:StringName = "", data:PackedInt32Array = [], data_type:DataType = DataType.INT, stride:int = 1):
+func _init(name:StringName = "", data:PackedInt32Array = [], data_type:DataType = DataType.INT):
 	self.name = name
 	self.data = data
 	self.data_type = data_type
-	self.stride = stride
+	self.stride = data_type_num_components(data_type)
 	
 func get_data_format_type()->DataFormatType:
 	return DataFormatType.INT32
+	
+func size()->int:
+	return data.size()
 
 func resize(size:int):
 	data.resize(size * stride)
@@ -69,3 +72,14 @@ func set_value_ivec4(value:Vector4i, index:int):
 	data[index * stride + 1] = value.y
 	data[index * stride + 2] = value.z
 	data[index * stride + 3] = value.w
+
+func get_buffer_byte_data()->PackedByteArray:
+	return data.to_byte_array()
+
+#func to_dictionary(buffer_ar:BufferArchive)->Dictionary:
+	#var result:Dictionary = super(buffer_ar)
+	#var region:BufferArchive.BufferRegion = buffer_ar.store_buffer(data.to_byte_array())
+	#
+	#result["data_buffer"] = region.index
+	#
+	#return result

@@ -32,16 +32,25 @@ const FLAG_28 = 28
 const FLAG_29 = 29
 const FLAG_30 = 30
 const FLAG_31 = 31
+const MAX_HP:float=100
 
+var consolelog:String = "Ready."
 var playerflags:int
-var playerHealth:float
+var playerHealth:float:
+	set (value):
+			playerHealth = value
+			if playerHealth>MAX_HP:
+				playerHealth = MAX_HP
 var playername:String
 var playerLives:int
 var score:int
 var lockCamera:bool = true
+func DebugPrint(thing):
+	print(thing)
+	consolelog+="\n" + str(thing)
 func ResetGame():
 	playerflags=0
-	playerHealth = 100
+	playerHealth = MAX_HP
 	playername = "Capsule"
 	playerLives = 3
 	score = 0

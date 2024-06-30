@@ -25,7 +25,6 @@
 extends Resource
 class_name ToolBlockSettings
 
-
 @export var block_alignment:BlockAlignment.Type = BlockAlignment.Type.ALIGN_TO_SURFACE
 @export var match_selected_block:bool = true
 @export var default_block_elevation:float = 0

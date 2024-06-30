@@ -50,7 +50,7 @@ func _init():
 	command_name = "Add cylinder"
 
 func create_block(blocks_root:Node, set_pivot_xform:Transform3D, mat:Material)->CyclopsBlock:
-	var block:CyclopsBlock = preload("../nodes/cyclops_block.gd").new()
+	var block:CyclopsBlock = preload("res://addons/cyclops_level_builder/nodes/cyclops_block.gd").new()
 	blocks_root.add_child(block)
 	block.owner = builder.get_editor_interface().get_edited_scene_root()
 	block.name = GeneralUtil.find_unique_name(blocks_root, block_name_prefix)
@@ -94,7 +94,8 @@ func do_it():
 			mesh.init_prism(base_points, axis_normal * height, uv_transform, material_id)
 			mesh.transform(set_pivot_xform)
 
-			block.block_data = mesh.to_convex_block_data()
+#			block.block_data = mesh.to_convex_block_data()
+			block.mesh_vector_data = mesh.to_mesh_vector_data()
 			block_paths.append(block.get_path())
 		
 	else:
@@ -105,7 +106,7 @@ func do_it():
 		mesh.init_prism(bounding_points, axis_normal * height, uv_transform, material_id)
 		mesh.transform(set_pivot_xform)
 
-		block.block_data = mesh.to_convex_block_data()
+		block.mesh_vector_data = mesh.to_mesh_vector_data()
 		block_paths.append(block.get_path())
 
 func undo_it():

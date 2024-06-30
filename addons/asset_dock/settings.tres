@@ -5,5 +5,5 @@
 [resource]
 script = ExtResource("1_jvau3")
 root_folder_path = "res://"
-file_types = Array[String](["tscn", "png", "gltf", "fbx"])
+file_types = Array[String](["tscn", "png", "gltf", "fbx", "ogg", "ogv", "xm", "it", "s3m", "mod", "obj"])
 hide_empty_folders = true

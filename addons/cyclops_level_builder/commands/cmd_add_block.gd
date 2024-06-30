@@ -43,7 +43,7 @@ func _init():
 	command_name = "Add block"
 
 func do_it():
-	var block:CyclopsBlock = preload("../nodes/cyclops_block.gd").new()
+	var block:CyclopsBlock = preload("res://addons/cyclops_level_builder/nodes/cyclops_block.gd").new()
 		
 	#var blocks_root:Node = builder.get_block_add_parent()
 	var block_parent:Node = builder.get_node(blocks_root_path)
@@ -72,7 +72,8 @@ func do_it():
 	mesh.init_block(bounds, uv_transform, material_id)
 	mesh.translate(-bounds.position)
 
-	block.block_data = mesh.to_convex_block_data()
+	block.mesh_vector_data = mesh.to_mesh_vector_data()
+#	block.block_data = mesh.to_convex_block_data()
 	block_path = block.get_path()
 	block.global_transform = Transform3D(Basis(), bounds.position)
 

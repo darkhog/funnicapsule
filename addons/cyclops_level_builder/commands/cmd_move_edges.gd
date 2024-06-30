@@ -29,7 +29,7 @@ extends CyclopsCommand
 class BlockEdgeChanges extends RefCounted:
 	var block_path:NodePath
 	var edge_indices:Array[int] = []
-	var tracked_block_data:ConvexBlockData
+	var tracked_block_data:MeshVectorData
 
 #Public 
 var move_offset:Vector3 = Vector3.ZERO
@@ -48,7 +48,7 @@ func add_edges(block_path:NodePath, indices:Array[int]):
 		changes = BlockEdgeChanges.new()
 		changes.block_path = block_path
 		var block:CyclopsBlock = builder.get_node(block_path)
-		changes.tracked_block_data = block.block_data
+		changes.tracked_block_data = block.mesh_vector_data
 		block_map[block_path] = changes
 
 	for index in indices:
@@ -72,63 +72,79 @@ func do_it():
 #		print("rec %s" % rec)
 		
 		var vol:ConvexVolume = ConvexVolume.new()
-		vol.init_from_convex_block_data(rec.tracked_block_data)
+		vol.init_from_mesh_vector_data(rec.tracked_block_data)
 
 #		print("init done")
 		var w2l:Transform3D = block.global_transform.affine_inverse()
 		var move_offset_local = w2l.basis * move_offset
+		#print("move_offset ", move_offset)
+		#print("move_offset_local ", move_offset_local)
 
-		#var moved_vert_indices:PackedInt32Array
-		var new_points:PackedVector3Array
-		var new_sel_centroids:PackedVector3Array
-		var moved_indices:Array[int] = []
+		var vert_indices:PackedInt32Array
 		for edge_index in rec.edge_indices:
 			var e:ConvexVolume.EdgeInfo = vol.edges[edge_index]
-			var v0:ConvexVolume.VertexInfo = vol.vertices[e.start_index]
-			var v1:ConvexVolume.VertexInfo = vol.vertices[e.end_index]
-			if e.selected:
-				new_sel_centroids.append((v0.point + v1.point) / 2 + move_offset_local)
-				
-				if !moved_indices.has(e.start_index):
-					new_points.append(v0.point + move_offset_local)
-					moved_indices.append(e.start_index)
-				if !moved_indices.has(e.end_index):
-					new_points.append(v1.point + move_offset_local)
-					moved_indices.append(e.end_index)
-			else:
-				if !moved_indices.has(e.start_index):
-					new_points.append(v0.point + move_offset_local)
-					moved_indices.append(e.start_index)
-				if !moved_indices.has(e.end_index):
-					new_points.append(v1.point + move_offset_local)
-					moved_indices.append(e.end_index)
+			if !vert_indices.has(e.start_index):
+				vert_indices.append(e.start_index)
+			if !vert_indices.has(e.end_index):
+				vert_indices.append(e.end_index)
 		
-		for v_idx in vol.vertices.size():
-			if !moved_indices.has(v_idx):
-				new_points.append(vol.vertices[v_idx].point)
-		#print("new points_ %s" % new_points)
-		
-		var new_vol:ConvexVolume = ConvexVolume.new()
-		new_vol.init_from_points(new_points)
+		for v_idx in vert_indices:
+			var v:ConvexVolume.VertexInfo = vol.vertices[v_idx]
+			v.point += move_offset_local
 
-		new_vol.copy_face_attributes(vol)
-
-		#print("new init done")
-		
-		#Copy selection data
-		for e_idx in new_vol.edges.size():
-			var e_new:ConvexVolume.EdgeInfo = new_vol.edges[e_idx]
-			var centroid:Vector3 = (new_vol.vertices[e_new.start_index].point + new_vol.vertices[e_new.end_index].point) / 2
-#			print ("vol point %s " % v1.point)
-			if new_sel_centroids.has(centroid):
-#				print("set sel")
-				e_new.selected = true
-
-		block.block_data = new_vol.to_convex_block_data()
+		block.mesh_vector_data = vol.to_mesh_vector_data()
+####
+		#var moved_vert_indices:PackedInt32Array
+		#var new_points:PackedVector3Array
+		#var new_sel_centroids:PackedVector3Array
+		#var moved_indices:Array[int] = []
+		#for edge_index in rec.edge_indices:
+			#var e:ConvexVolume.EdgeInfo = vol.edges[edge_index]
+			#var v0:ConvexVolume.VertexInfo = vol.vertices[e.start_index]
+			#var v1:ConvexVolume.VertexInfo = vol.vertices[e.end_index]
+			#if e.selected:
+				#new_sel_centroids.append((v0.point + v1.point) / 2 + move_offset_local)
+				#
+				#if !moved_indices.has(e.start_index):
+					#new_points.append(v0.point + move_offset_local)
+					#moved_indices.append(e.start_index)
+				#if !moved_indices.has(e.end_index):
+					#new_points.append(v1.point + move_offset_local)
+					#moved_indices.append(e.end_index)
+			#else:
+				#if !moved_indices.has(e.start_index):
+					#new_points.append(v0.point + move_offset_local)
+					#moved_indices.append(e.start_index)
+				#if !moved_indices.has(e.end_index):
+					#new_points.append(v1.point + move_offset_local)
+					#moved_indices.append(e.end_index)
+		#
+		#for v_idx in vol.vertices.size():
+			#if !moved_indices.has(v_idx):
+				#new_points.append(vol.vertices[v_idx].point)
+		##print("new points_ %s" % new_points)
+		#
+		#var new_vol:ConvexVolume = ConvexVolume.new()
+		#new_vol.init_from_points(new_points)
+#
+		#new_vol.copy_face_attributes(vol)
+#
+		##print("new init done")
+		#
+		##Copy selection data
+		#for e_idx in new_vol.edges.size():
+			#var e_new:ConvexVolume.EdgeInfo = new_vol.edges[e_idx]
+			#var centroid:Vector3 = (new_vol.vertices[e_new.start_index].point + new_vol.vertices[e_new.end_index].point) / 2
+##			print ("vol point %s " % v1.point)
+			#if new_sel_centroids.has(centroid):
+##				print("set sel")
+				#e_new.selected = true
+#
+		#block.mesh_vector_data = new_vol.to_mesh_vector_data()
 	
 
 func undo_it():
 	for block_path in block_map.keys():
 		var rec:BlockEdgeChanges = block_map[block_path]
 		var block:CyclopsBlock = builder.get_node(block_path)
-		block.block_data = rec.tracked_block_data
+		block.mesh_vector_data = rec.tracked_block_data

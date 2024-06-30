@@ -6,11 +6,12 @@ extends RigidBody3D
 @export var CamNode:Node3D
 @export var PlayerVisual:Node3D
 @export var ExtraJumpsZeroBased:int = 1
-@export var DeathAudioPlayer:AudioStreamPlayer
+@export var aPlayer:AudioStreamPlayer
 @export var DeathSound:AudioStream
 @export var JumpSound:AudioStream
 @export var DblJumpSound:AudioStream
 @export var ShootSound:AudioStream
+@export var HurtSound:AudioStream
 var InternalJumpCount:int
 var onGround:bool = true
 var scheduleDeath:bool=false
@@ -19,48 +20,40 @@ var hasRecentlyMoved:bool=false
 func _ready():
 	pass
 
-# fucking gdscript can't fucking convert the fucking bools to the fucking strings
-# what the actual fuck were they thinking I can't even. I am not using string
-# formatter for fucking simple debug messages. Fuck.
-
-func boolToString (b:bool):
-	if b:
-		return "true"
-	else:
-		return "false"
-
 func applyPlayerForces(mforce:Vector3,visualAngleAdjustment:float):
 	var fvec = mforce.rotated(Vector3(0,1,0),deg_to_rad(CamNode.global_rotation_degrees.y+270))
 	apply_force(fvec)
 	PlayerVisual.global_rotation_degrees.y = CamNode.global_rotation_degrees.y+visualAngleAdjustment
 	hasRecentlyMoved = true
 
-func movement_handle():
+func movement_handle(normal:float):
 	if !(onGround):
 		hasRecentlyMoved = true
 	if scheduleDeath:
-		if DeathAudioPlayer.get_playback_position()>0.09:
+		if aPlayer.get_playback_position()>0.09:
 			freeze=true
 		return
-	if Input.is_action_pressed("forward"):
-		applyPlayerForces(Vector3(-moveForce,0,0),180)
-	if Input.is_action_pressed("backward"):
-		applyPlayerForces(Vector3(moveForce,0,0),0)
-	if Input.is_action_pressed("left"):
-		applyPlayerForces(Vector3(0,0,moveForce),270)
-		hasRecentlyMoved = true
-	if Input.is_action_pressed("right"):
-		applyPlayerForces(Vector3(0,0,-moveForce),90)
+	if normal>0.666 || !onGround:
+		if Input.is_action_pressed("forward"):
+			applyPlayerForces(Vector3(-moveForce,0,0),180)
+		if Input.is_action_pressed("backward"):
+			applyPlayerForces(Vector3(moveForce,0,0),0)
+		if Input.is_action_pressed("left"):
+			applyPlayerForces(Vector3(0,0,moveForce),270)
+		if Input.is_action_pressed("right"):
+			applyPlayerForces(Vector3(0,0,-moveForce),90)
 	# Jumpy McJump
 	if onGround:
 		InternalJumpCount = ExtraJumpsZeroBased
 		if Input.is_action_just_pressed("jump"):
 			apply_impulse(Vector3(0,jumpForce,0))
+			PlaySoundSafe(JumpSound)
 	#multijump
 	if !onGround && InternalJumpCount>0:
 		if Input.is_action_just_pressed("jump"):
 			InternalJumpCount-=1
 			apply_impulse(Vector3(0,jumpForce,0))
+			PlaySoundSafe(DblJumpSound)
 	
 
 func _physics_process(_delta):
@@ -68,28 +61,35 @@ func _physics_process(_delta):
 	onGround = !onGroundShape.collision_result.is_empty()
 	#checking ground normal to ensure we can jump and it's not a fake signal from
 	#a wall or something.
-	if onGround:
-		onGround = onGround && (onGroundShape.get_collision_normal(0).y>0.7)
+	if !onGround:
+		hasRecentlyMoved = true
+	#if onGround:
+		#onGround = onGround && (onGroundShape.get_collision_normal(0).y>0.7)
 	# inputting the movement.
-	movement_handle()
+	movement_handle(onGroundShape.get_collision_normal(0).y)
+	#Globals.DebugPrint(onGroundShape.get_collision_normal(0).y)
 	
 	
 	#setting the dampening.
 	if (hasRecentlyMoved) && (onGround) && !(Input.is_action_pressed("jump")) && !(Input.is_action_pressed("left")) && !(Input.is_action_pressed("right")) && !(Input.is_action_pressed("forward")) && !(Input.is_action_pressed("backward")):
 		set_axis_velocity(Vector3(linear_velocity.x/GroundDampeningFactor,linear_velocity.y,linear_velocity.z/GroundDampeningFactor))
 		hasRecentlyMoved = false
-		
-	#else:
-		#linear_damp = ProjectSettings.get_setting("physics/3d/default_linear_damp",0.1)
+
 func hurtPlayer(amount:float):
 	Globals.playerHealth-=amount
+	PlaySoundSafe(HurtSound)
 	if Globals.playerHealth<=0:
 		die()
 	
+func PlaySoundSafe(stream:AudioStream):
+	if is_instance_valid(aPlayer) && is_instance_valid(stream):
+		var streamPlayback:AudioStreamPlaybackPolyphonic =aPlayer.get_stream_playback() as AudioStreamPlaybackPolyphonic
+		if is_instance_valid(streamPlayback):
+			streamPlayback.play_stream(stream)
 func die():
-	if DeathAudioPlayer!=null && DeathSound!=null:
-		DeathAudioPlayer.stream = DeathSound
-		DeathAudioPlayer.play()
+	if is_instance_valid(aPlayer) && is_instance_valid(DeathSound):
+		aPlayer.stream=DeathSound
+		aPlayer.play()
 		scheduleDeath = true
 		Globals.lockCamera = false
 	else:
@@ -111,5 +111,5 @@ func GameOver():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
 	if scheduleDeath:
-		if !DeathAudioPlayer.playing:
+		if !aPlayer.playing:
 			respawn()

@@ -1,0 +1,47 @@
+[gd_scene load_steps=4 format=3 uid="uid://bie61kdso1uq1"]
+
+[ext_resource type="Script" path="res://code/ui/debugvisibility.gd" id="1_r3i36"]
+[ext_resource type="Script" path="res://code/ui/consolescroll.gd" id="2_hj8t3"]
+[ext_resource type="Script" path="res://code/ui/consolelogupdate.gd" id="3_ccvvb"]
+
+[node name="Debugui" type="CanvasLayer"]
+script = ExtResource("1_r3i36")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -1734.0
+offset_top = -552.0
+grow_horizontal = 0
+grow_vertical = 0
+follow_focus = true
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 3
+script = ExtResource("2_hj8t3")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Control/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 10
+theme_override_font_sizes/normal_font_size = 26
+theme_override_font_sizes/bold_font_size = 26
+theme_override_font_sizes/italics_font_size = 26
+theme_override_font_sizes/bold_italics_font_size = 26
+theme_override_font_sizes/mono_font_size = 26
+text = "Ready."
+fit_content = true
+scroll_following = true
+shortcut_keys_enabled = false
+script = ExtResource("3_ccvvb")

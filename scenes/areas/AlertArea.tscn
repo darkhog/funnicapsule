@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://ddbuyiaw8twa5"]
+
+[ext_resource type="Script" path="res://code/alertArea.gd" id="1_q8wak"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_7e7hc"]
+size = Vector3(3.00793, 3.80298, 0.526855)
+
+[node name="AlertArea" type="Area3D"]
+transform = Transform3D(0.932991, 0, -0.359899, 0, 1, 0, 0.359899, 0, 0.932991, -73.0035, 29.039, -12.3285)
+collision_layer = 4
+collision_mask = 128
+script = ExtResource("1_q8wak")
+title = "NO"
+text = "This is not something you should be doing right now..."
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_7e7hc")

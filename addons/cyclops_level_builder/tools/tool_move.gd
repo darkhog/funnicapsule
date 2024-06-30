@@ -53,6 +53,15 @@ var base_points:PackedVector3Array
 
 var gizmo_translate:GizmoTranslate
 
+var settings:ToolMoveSettings = ToolMoveSettings.new()
+
+func _get_tool_properties_editor()->Control:
+	var ed:ToolMoveSettingsEditor = preload("res://addons/cyclops_level_builder/tools/tool_move_settings_editor.tscn").instantiate()
+	
+	ed.settings = settings
+	
+	return ed
+	
 func _get_tool_id()->String:
 	return TOOL_ID
 
@@ -62,6 +71,8 @@ func draw_gizmo(viewport_camera:Camera3D):
 		gizmo_translate = preload("res://addons/cyclops_level_builder/tools/gizmos/gizmo_translate.tscn").instantiate()
 	
 	var blocks:Array[CyclopsBlock] = builder.get_selected_blocks()
+	var active_block:Node3D = builder.get_active_block()
+	
 	if blocks.is_empty():
 		global_scene.set_custom_gizmo(null)
 	else:
@@ -70,7 +81,24 @@ func draw_gizmo(viewport_camera:Camera3D):
 			origin += block.global_transform.origin
 		origin /= blocks.size()
 		global_scene.set_custom_gizmo(gizmo_translate)
-		gizmo_translate.global_transform.origin = origin
+		
+		match settings.transform_space:
+			TransformSpace.Type.GLOBAL:
+				var xform:Transform3D = Transform3D.IDENTITY
+				xform.origin = origin
+				gizmo_translate.global_transform = xform
+			TransformSpace.Type.LOCAL:
+				var xform:Transform3D = active_block.global_transform
+				gizmo_translate.global_transform = xform
+			TransformSpace.Type.NORMAL:
+				var xform:Transform3D = active_block.global_transform
+				gizmo_translate.global_transform = xform
+			TransformSpace.Type.VIEW:
+				gizmo_translate.global_basis = viewport_camera.global_basis
+				gizmo_translate.global_position = origin
+			TransformSpace.Type.PARENT:
+				var xform:Transform3D = active_block.get_parent_node_3d().global_transform
+				gizmo_translate.global_transform = xform
 
 
 func _draw_tool(viewport_camera:Camera3D):
@@ -128,7 +156,7 @@ func start_drag(viewport_camera:Camera3D, event:InputEvent):
 				
 				cmd_xform_blocks = CommandTransformBlocks.new()
 				cmd_xform_blocks.builder = builder
-				cmd_xform_blocks.lock_uvs = builder.lock_uvs
+				cmd_xform_blocks.lock_uvs = settings.correct_uvs
 				for child in sel_blocks:
 					cmd_xform_blocks.add_block(child.get_path())
 
@@ -160,7 +188,7 @@ func start_drag(viewport_camera:Camera3D, event:InputEvent):
 			
 			cmd_xform_blocks = CommandTransformBlocks.new()
 			cmd_xform_blocks.builder = builder
-			cmd_xform_blocks.lock_uvs = builder.lock_uvs
+			cmd_xform_blocks.lock_uvs = settings.correct_uvs
 			for child in builder.get_selected_blocks():
 				cmd_xform_blocks.add_block(child.get_path())
 			
@@ -195,7 +223,7 @@ func _gui_input(viewport_camera:Camera3D, event:InputEvent)->bool:
 				
 				cmd_xform_blocks = CommandTransformBlocks.new()
 				cmd_xform_blocks.builder = builder
-				cmd_xform_blocks.lock_uvs = builder.lock_uvs
+				cmd_xform_blocks.lock_uvs = settings.correct_uvs
 				for child in builder.get_selected_blocks():
 					cmd_xform_blocks.add_block(child.get_path())
 					
@@ -349,19 +377,37 @@ func _gui_input(viewport_camera:Camera3D, event:InputEvent)->bool:
 			if !block_drag_p0.is_finite():
 				block_drag_p0 = origin + dir * 20
 			
+			var xform_basis:Basis
+			
+			match settings.transform_space:
+				TransformSpace.Type.GLOBAL:
+					xform_basis = Basis.IDENTITY
+				TransformSpace.Type.LOCAL:
+					var active_block:Node3D = builder.get_active_block()
+					xform_basis = active_block.basis
+				TransformSpace.Type.NORMAL:
+					var active_block:Node3D = builder.get_active_block()
+					xform_basis = active_block.basis
+				TransformSpace.Type.VIEW:
+					xform_basis = viewport_camera.global_basis
+				TransformSpace.Type.PARENT:
+					var active_block:Node3D = builder.get_active_block().get_parent_node_3d()
+					xform_basis = active_block.basis
+					
+			
 			match move_constraint:
 				MoveConstraint.Type.AXIS_X:
-					block_drag_cur = MathUtil.closest_point_on_line(origin, dir, block_drag_p0, Vector3.RIGHT)
+					block_drag_cur = MathUtil.closest_point_on_line(origin, dir, block_drag_p0, xform_basis.x)
 				MoveConstraint.Type.AXIS_Y:
-					block_drag_cur = MathUtil.closest_point_on_line(origin, dir, block_drag_p0, Vector3.UP)
+					block_drag_cur = MathUtil.closest_point_on_line(origin, dir, block_drag_p0, xform_basis.y)
 				MoveConstraint.Type.AXIS_Z:
-					block_drag_cur = MathUtil.closest_point_on_line(origin, dir, block_drag_p0, Vector3.BACK)
+					block_drag_cur = MathUtil.closest_point_on_line(origin, dir, block_drag_p0, xform_basis.z)
 				MoveConstraint.Type.PLANE_XY:
-					block_drag_cur = MathUtil.intersect_plane(origin, dir, block_drag_p0, Vector3.BACK)
+					block_drag_cur = MathUtil.intersect_plane(origin, dir, block_drag_p0, xform_basis.z)
 				MoveConstraint.Type.PLANE_XZ:
-					block_drag_cur = MathUtil.intersect_plane(origin, dir, block_drag_p0, Vector3.UP)
+					block_drag_cur = MathUtil.intersect_plane(origin, dir, block_drag_p0, xform_basis.y)
 				MoveConstraint.Type.PLANE_YZ:
-					block_drag_cur = MathUtil.intersect_plane(origin, dir, block_drag_p0, Vector3.RIGHT)
+					block_drag_cur = MathUtil.intersect_plane(origin, dir, block_drag_p0, xform_basis.x)
 				MoveConstraint.Type.PLANE_VIEWPORT:
 					block_drag_cur = MathUtil.intersect_plane(origin, dir, block_drag_p0, viewport_camera.global_transform.basis.z)
 					
@@ -393,7 +439,13 @@ func _activate(builder:CyclopsLevelBuilder):
 	var global_scene:CyclopsGlobalScene = builder.get_global_scene()
 	global_scene.clear_tool_mesh()
 
+	var cache:Dictionary = builder.get_tool_cache(TOOL_ID)
+	settings.load_from_cache(cache)
+
 func _deactivate():
 	var global_scene:CyclopsGlobalScene = builder.get_global_scene()
 	global_scene.set_custom_gizmo(null)
+
+	var cache:Dictionary = settings.save_to_cache()
+	builder.set_tool_cache(TOOL_ID, cache)
 

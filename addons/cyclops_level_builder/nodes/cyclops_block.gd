@@ -27,13 +27,6 @@ class_name CyclopsBlock
 
 signal mesh_changed
 
-@export var collision_type:Collision.Type = Collision.Type.STATIC:
-	get:
-		return collision_type
-	set(value):
-		collision_type = value
-		update_physics_body()
-
 var mesh_instance:MeshInstance3D
 var mesh_wire:MeshInstance3D
 var collision_body:PhysicsBody3D
@@ -47,21 +40,43 @@ var control_mesh:ConvexVolume
 @export var block_data:ConvexBlockData:
 	get:
 		return block_data
+		
 	set(value):
 		if block_data != value:
 			block_data = value
 			control_mesh = ConvexVolume.new()
 			control_mesh.init_from_convex_block_data(block_data)
 			
+			#Convert to mesh vector data
+			var mvd:MeshVectorData = MeshVectorData.new()
+			mvd.create_from_convex_block(block_data)
+			mesh_vector_data = mvd
+			
+			#dirty = true
+			#mesh_changed.emit()
+
+@export var mesh_vector_data:MeshVectorData:
+	set(value):
+		if mesh_vector_data != value:
+			mesh_vector_data = value
+
+			control_mesh = ConvexVolume.new()
+			control_mesh.init_from_mesh_vector_data(mesh_vector_data)
+
 			dirty = true
 			mesh_changed.emit()
-
-#@export var mesh_vector_data:MeshVectorData
 
 @export var materials:Array[Material]
 
 var default_material:Material = preload("res://addons/cyclops_level_builder/materials/grid.tres")
 var display_mode:DisplayMode.Type = DisplayMode.Type.MATERIAL
+
+@export var collision_type:Collision.Type = Collision.Type.STATIC:
+	get:
+		return collision_type
+	set(value):
+		collision_type = value
+		update_physics_body()
 
 @export_flags_3d_physics var collision_layer:int = 1:
 	get:
@@ -123,6 +138,7 @@ func update_physics_body():
 	
 
 func build_from_block():
+	#print("build_from_block")
 		
 	dirty = false
 	
@@ -136,13 +152,16 @@ func build_from_block():
 	
 #	print("block_data %s" % block_data)
 #	print("vert points %s" % block_data.vertex_points)
-	if !block_data:
+	#if !block_data:
+		#return
+	if !mesh_vector_data:
 		return
 	
 #	print("got block data")		
 	
 	var vol:ConvexVolume = ConvexVolume.new()
-	vol.init_from_convex_block_data(block_data)
+	vol.init_from_mesh_vector_data(mesh_vector_data)
+	#vol.init_from_convex_block_data(block_data)
 	
 	#print("volume %s" % vol)
 	
@@ -153,6 +172,7 @@ func build_from_block():
 		mesh_wire.mesh = vol.create_mesh_wire(global_scene.outline_material)
 		#print ("added wireframe")
 
+		#print("rebuilding mesh")
 		if display_mode == DisplayMode.Type.MATERIAL:
 			mesh = vol.create_mesh(materials, default_material)
 		if display_mode == DisplayMode.Type.MESH:
@@ -224,7 +244,7 @@ func append_mesh_wire(mesh:ImmediateMesh):
 
 
 func intersect_ray_closest(origin:Vector3, dir:Vector3)->IntersectResults:
-	if !block_data:
+	if !mesh_vector_data:
 		return null
 	
 	var xform:Transform3D = global_transform.affine_inverse()
@@ -250,3 +270,24 @@ func select_face(face_idx:int, select_type:Selection.Type = Selection.Type.REPLA
 		control_mesh.faces[face_idx].selected = !control_mesh.faces[face_idx].selected
 
 	mesh_changed.emit()
+
+func export_to_cyclops_file(file_builder:CyclopsFileBuilder)->Dictionary:
+	var result:Dictionary
+	
+	result["collision_type"] = Collision.Type.keys()[collision_type]
+	result["collision_layer"] = collision_layer
+	result["collision_mask"] = collision_mask
+	
+	var mat_res_paths:PackedStringArray
+	for mat in materials:
+		if mat:
+			mat_res_paths.append(mat.resource_path)
+		else:
+			mat_res_paths.append("")
+	result["materials"] = mat_res_paths
+	
+	if mesh_vector_data:
+		result["mesh"] = mesh_vector_data.to_dictionary(file_builder)
+	#build_mesh["mesh"] = cur_node.mesh_vector_data.to_dictionary(self)
+	return result
+	

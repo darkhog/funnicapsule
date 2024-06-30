@@ -1,0 +1,74 @@
+[gd_scene load_steps=8 format=3 uid="uid://beohjyv06jnak"]
+
+[ext_resource type="Texture2D" uid="uid://5av1o13gkww0" path="res://textures/capsule_lives_matter_lol.png" id="1_tubtk"]
+[ext_resource type="Script" path="res://code/ui/updatelifecount.gd" id="2_eq6ld"]
+[ext_resource type="Texture2D" uid="uid://iledi1y4mfy" path="res://textures/lifebarian_under.png" id="3_r8hv3"]
+[ext_resource type="Texture2D" uid="uid://e5ewe3iy1lmr" path="res://textures/lifebarian_over.png" id="4_mk1c0"]
+[ext_resource type="Texture2D" uid="uid://dx4p4xlfh2bid" path="res://textures/lifebarian.png" id="5_kb5pe"]
+[ext_resource type="Script" path="res://code/ui/updatehealth.gd" id="6_by0y5"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_ob202"]
+font_size = 41
+outline_size = 18
+outline_color = Color(0, 0, 0, 1)
+shadow_size = 16
+shadow_color = Color(0, 0, 0, 0.709804)
+shadow_offset = Vector2(6.07, 5.425)
+
+[node name="LevelUi" type="CanvasLayer"]
+follow_viewport_enabled = true
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LivesLbl" type="Label" parent="Control"]
+layout_mode = 0
+offset_left = 35.0
+offset_top = 28.0
+offset_right = 406.0
+offset_bottom = 99.0
+text = "Lives:"
+label_settings = SubResource("LabelSettings_ob202")
+
+[node name="TextureRect" type="TextureRect" parent="Control/LivesLbl"]
+layout_mode = 1
+offset_left = 141.0
+offset_right = 205.0
+offset_bottom = 64.0
+pivot_offset = Vector2(0, 32)
+texture = ExtResource("1_tubtk")
+stretch_mode = 1
+script = ExtResource("2_eq6ld")
+
+[node name="LifeLbl" type="Label" parent="Control"]
+layout_mode = 0
+offset_left = 35.0
+offset_top = 117.0
+offset_right = 406.0
+offset_bottom = 188.0
+text = "Life:"
+label_settings = SubResource("LabelSettings_ob202")
+
+[node name="TextureProgressBar" type="TextureProgressBar" parent="Control/LifeLbl"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 98.0
+offset_top = -46.5
+offset_right = 421.0
+offset_bottom = 46.5
+grow_vertical = 2
+pivot_offset = Vector2(0, 46.5)
+step = 0.0
+value = 100.0
+texture_under = ExtResource("3_r8hv3")
+texture_over = ExtResource("4_mk1c0")
+texture_progress = ExtResource("5_kb5pe")
+texture_progress_offset = Vector2(32, 31)
+script = ExtResource("6_by0y5")
