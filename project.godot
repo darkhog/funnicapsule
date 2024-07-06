@@ -16,7 +16,8 @@ run/main_scene="res://Menu.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
 boot_splash/bg_color=Color(0.141176, 0.141176, 0.141176, 0)
 boot_splash/image="res://cunt.png"
-config/icon="res://icon.svg"
+config/icon="res://funnicapsule.png"
+config/windows_native_icon="res://winicon.ico"
 boot_splash/minimum_display_time=5000
 
 [autoload]
@@ -24,6 +25,13 @@ boot_splash/minimum_display_time=5000
 CyclopsAutoload="*res://addons/cyclops_level_builder/cyclops_global_scene.tscn"
 Bitops="*res://code/bitops.gd"
 Globals="*res://code/globals.gd"
+
+[compression]
+
+formats/zstd/long_distance_matching=true
+formats/zstd/compression_level=9
+formats/zlib/compression_level=9
+formats/gzip/compression_level=9
 
 [debug]
 
@@ -126,6 +134,7 @@ textures/canvas_textures/default_texture_filter=0
 lights_and_shadows/use_physical_light_units=true
 lights_and_shadows/directional_shadow/soft_shadow_filter_quality=3
 lights_and_shadows/positional_shadow/soft_shadow_filter_quality=3
+reflections/sky_reflections/roughness_layers=12
 global_illumination/gi/use_half_resolution=true
 global_illumination/voxel_gi/quality=1
 camera/depth_of_field/depth_of_field_bokeh_shape=0
