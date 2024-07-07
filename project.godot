@@ -120,7 +120,6 @@ locale/locale_filter_mode=0
 [physics]
 
 3d/run_on_separate_thread=true
-common/physics_ticks_per_second=120
 common/physics_jitter_fix=0.0
 jolt_3d/collisions/areas_detect_static_bodies=true
 jolt_3d/collisions/report_all_kinematic_contacts=true

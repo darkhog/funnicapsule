@@ -1,0 +1,9 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://3pwkdbt7vh8"]
+
+[ext_resource type="Shader" uid="uid://be28ja7gcghvs" path="res://shaders/retrofilth.tres" id="1_n73re"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_n73re")
+shader_parameter/Color = Color(1, 1, 1, 1)
+shader_parameter/FloatParameter = 1.0

@@ -32,7 +32,6 @@ subsurf_scatter_transmittance_boost = 0.71
 backlight_enabled = true
 backlight = Color(1, 1, 1, 1)
 uv1_scale = Vector3(0.25, 0.25, 0.25)
-uv1_triplanar = true
 texture_filter = 4
 grow_amount = 0.512
 distance_fade_mode = 2
