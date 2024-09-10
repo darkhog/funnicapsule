@@ -29,15 +29,26 @@ var editor_plugin:CyclopsLevelBuilder:
 	get:
 		return editor_plugin
 	set(value):
+		if editor_plugin:
+			editor_plugin.xray_mode_changed.disconnect(on_xray_mode_changed)
+#			editor_plugin.main_screen_changed.disconnect(_on_main_screen_changed)
+			editor_plugin.active_node_changed.disconnect(on_active_node_changed)
+			editor_plugin.tool_changed.disconnect(on_tool_changed)
+		
 		editor_plugin = value
-		editor_plugin.active_node_changed.connect(on_active_node_changed)
+		
+		if editor_plugin:
+			editor_plugin.active_node_changed.connect(on_active_node_changed)			
+			editor_plugin.xray_mode_changed.connect(on_xray_mode_changed)
+#			editor_plugin.main_screen_changed.connect(_on_main_screen_changed)
+			editor_plugin.tool_changed.connect(on_tool_changed)
 		
 		build_ui()
 
 
-var tool_button_group = ButtonGroup.new()
-var override_shortcuts: Dictionary = {} #Dictionary[InputEvent, String]
-var currently_in_3d := false
+#var tool_button_group = ButtonGroup.new()
+#var override_shortcuts: Dictionary = {} #Dictionary[InputEvent, String]
+#var currently_in_3d := false
 
 func on_active_node_changed():
 	update_grid()
@@ -45,6 +56,7 @@ func on_active_node_changed():
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	EditorInterface.get_selection().selection_changed.connect(_on_selection_changed)
 
 	%Menu.clear()
 	%Menu.add_action_item(ActionToolDuplicate.new(editor_plugin))
@@ -75,17 +87,15 @@ func _ready():
 	%Menu.add_action_item(ActionRotateZ180.new(editor_plugin))
 	%Menu.add_action_item(ActionMirrorSelectionZ.new(editor_plugin))
 	
-	var global_scene = get_node("/root/CyclopsAutoload")
-
-	global_scene.xray_mode_changed.connect(on_xray_mode_changed)
-	%bn_xray.button_pressed = global_scene.xray_mode
-			
+	#var global_scene = get_node("/root/CyclopsAutoload")
+#
 	update_grid()
 	
 
 
 
 var prev_button_pressed: Button = null
+
 func _press_button_line(button: Button) -> void:
 	if prev_button_pressed != null:
 		var line := prev_button_pressed.get_node_or_null('line')
@@ -105,51 +115,69 @@ func _press_button_line(button: Button) -> void:
 
 
 func build_ui():
+	#print("build_ui")
 	#Tools
 	for child in %ToolButtonContainer.get_children():
 		%ToolButtonContainer.remove_child(child)
+		child.queue_free()
 	
 	%snap_options.clear()
 	
 	if !editor_plugin:
 		return
+
+	%bn_xray.button_pressed = editor_plugin.xray_mode
 		
-	editor_plugin.main_screen_changed.connect(_on_main_screen_changed)
 	set_process_input(true)
 	
+	var active_block:CyclopsBlock = editor_plugin.get_active_block()
+	for tool:CyclopsTool in editor_plugin.tool_list:
+		if tool._show_in_toolbar() && tool._can_handle_object(active_block):
+			var bn:ToolButton = preload("res://addons/cyclops_level_builder/menu/tool_button.tscn").instantiate()
+			bn.plugin = editor_plugin
+			bn.tool_id = tool._get_tool_id()
+			bn.icon = tool._get_tool_icon()
+			if !bn.icon:
+				bn.text = tool._get_tool_name()
+			bn.tooltip_text = tool._get_tool_tooltip()
+			
+			%ToolButtonContainer.add_child(bn)
+	#########
 	
-	var config:CyclopsConfig = editor_plugin.config
-	for tag: ToolTag in config.tool_tags:
-#		print("adding tag %s" % tag.name)
-		var bn:Button = Button.new()
-		if tag.icon:
-			bn.icon = tag.icon
-		else:
-			bn.text = tag.name
-		
-		bn.name = tag.name
-		
-		if !tag.input_events.is_empty(): #InputEvent
-			if tag.input_events_override: #bool
-				for v: InputEvent in tag.input_events:
-					override_shortcuts[v] = tag.name #for _input function
-			else:
-				bn.shortcut = Shortcut.new()
-				for v: InputEvent in tag.input_events:
-					bn.shortcut.events.append(v)
-		
-		bn.tooltip_text = tag.tooltip
-		bn.pressed.connect(func():
-			_press_button_line(bn)
-			tag._activate(editor_plugin)
-		)
-#		print("adding bn %s" % tag.name)
-		
-		%ToolButtonContainer.add_child(bn)
+	#if false:
+		#var config:CyclopsConfig = editor_plugin.config
+		#for tag: ToolTag in config.tool_tags:
+	##		print("adding tag %s" % tag.name)
+			#var bn:Button = Button.new()
+			#if tag.icon:
+				#bn.icon = tag.icon
+			#else:
+				#bn.text = tag.name
+			#
+			#bn.name = tag.name
+			#
+			#if !tag.input_events.is_empty(): #InputEvent
+				#if tag.input_events_override: #bool
+					#for v: InputEvent in tag.input_events:
+						#override_shortcuts[v] = tag.name #for _input function
+				#else:
+					#bn.shortcut = Shortcut.new()
+					#for v: InputEvent in tag.input_events:
+						#bn.shortcut.events.append(v)
+			#
+			#bn.tooltip_text = tag.tooltip
+			#bn.pressed.connect(func():
+				#_press_button_line(bn)
+				#tag._activate(editor_plugin)
+			#)
+	##		print("adding bn %s" % tag.name)
+			#
+			#%ToolButtonContainer.add_child(bn)
 		
 	%display_mode.select(editor_plugin.display_mode)
 	
 	#Snapping
+	var config:CyclopsConfig = editor_plugin.config
 	for tag in config.snapping_tags:
 		if tag.icon:
 			%snap_options.add_icon_item(tag.icon, tag.name)
@@ -165,29 +193,30 @@ func update_grid():
 	
 	$HBoxContainer/display_mode.select(editor_plugin.display_mode)
 		
+func _on_selection_changed():
+	build_ui()
 
+func on_tool_changed(tool:CyclopsTool):
+	pass
 
-func _on_main_screen_changed(screen_name: String):
-	currently_in_3d = (screen_name == '3D')
+#func _on_main_screen_changed(screen_name: String):
+	#currently_in_3d = (screen_name == '3D')
 
-func _input(event: InputEvent) -> void:
-	if !currently_in_3d:		return
-	
-	for v: InputEvent in override_shortcuts:
-		if event.is_match(v, true) and event.is_pressed() and not event.is_echo():
-			var button := %ToolButtonContainer.get_node_or_null(override_shortcuts[v] as String) as Button
-			if button:
-				button.pressed.emit() #simulate press
-			break
+#func _input(event: InputEvent) -> void:
+	#if !currently_in_3d:
+		#return
+	#
+	#for v: InputEvent in override_shortcuts:
+		#if event.is_match(v, true) and event.is_pressed() and not event.is_echo():
+			#var button := %ToolButtonContainer.get_node_or_null(override_shortcuts[v] as String) as Button
+			#if button:
+				#button.pressed.emit() #simulate press
+			#break
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	pass
-
-
-#func _on_grid_size_item_selected(index):
-	#editor_plugin.get_global_scene().grid_size = index - 4
 
 
 
@@ -207,8 +236,8 @@ func _on_bn_xray_toggled(button_pressed:bool):
 	if !editor_plugin:
 		return
 	
-	var global_scene:CyclopsGlobalScene = editor_plugin.get_global_scene()
-	global_scene.xray_mode = button_pressed
+	#var global_scene:CyclopsGlobalScene = editor_plugin.get_global_scene()
+	editor_plugin.xray_mode = button_pressed
 	
 #
 #func _on_bn_snap_settings_pressed():

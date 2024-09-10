@@ -39,6 +39,21 @@ var last_mouse_pos:Vector2
 
 func _get_tool_id()->String:
 	return TOOL_ID
+	
+func _get_tool_name()->String:
+	var tag:ToolTag = load("res://addons/cyclops_level_builder/data/tool_tags/tool_tag_material_brush.tres")
+	return tag.name
+
+func _get_tool_icon()->Texture2D:
+	var tag:ToolTag = load("res://addons/cyclops_level_builder/data/tool_tags/tool_tag_material_brush.tres")
+	return tag.icon
+
+func _get_tool_tooltip()->String:
+	var tag:ToolTag = load("res://addons/cyclops_level_builder/data/tool_tags/tool_tag_material_brush.tres")
+	return tag.tooltip
+
+func _can_handle_object(node:Node)->bool:
+	return node is CyclopsBlock
 
 func _draw_tool(viewport_camera:Camera3D):
 	super._draw_tool(viewport_camera)

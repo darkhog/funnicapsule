@@ -6,6 +6,9 @@
 transparency = 4
 albedo_color = Color(1, 0, 0, 0.262745)
 roughness = 0.24
+emission_enabled = true
+emission = Color(0, 0, 1, 1)
+emission_intensity = 21114.9
 refraction_enabled = true
 refraction_scale = 0.5
 refraction_texture = ExtResource("1_1c32x")

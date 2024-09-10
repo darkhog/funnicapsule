@@ -7,7 +7,7 @@ extends SpringArm3D
 @export var zoomStrength:float = 1
 @export var PlayerObj:Node3D
 # Called when the node enters the scene tree for the first time.
-func _ready():
+func _ready()->void:
 	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_RESIZE_DISABLED, true)
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 # ##############################################################################
@@ -21,7 +21,7 @@ func _ready():
 # ##############################################################################
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
+func _process(delta:float)->void:
 	if Globals.lockCamera:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		rotate_object_local(Vector3.UP,Input.get_last_mouse_velocity().x*delta*(rotationstrength*-1))

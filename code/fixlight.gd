@@ -7,4 +7,3 @@ func _ready() -> void:
 	we.environment.sdfgi_enabled = false
 	await get_tree().process_frame #waiting for a single frame before reenabling
 	we.environment.sdfgi_enabled = true
-

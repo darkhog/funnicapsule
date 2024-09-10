@@ -57,12 +57,27 @@ var mouse_hover_pos:Vector2
 func _get_tool_id()->String:
 	return TOOL_ID
 
+func _get_tool_name()->String:
+	var tag:ToolTag = load("res://addons/cyclops_level_builder/data/tool_tags/tool_tag_create_block.tres")
+	return tag.name
+
+func _get_tool_icon()->Texture2D:
+	var tag:ToolTag = load("res://addons/cyclops_level_builder/data/tool_tags/tool_tag_create_block.tres")
+	return tag.icon
+
+func _get_tool_tooltip()->String:
+	var tag:ToolTag = load("res://addons/cyclops_level_builder/data/tool_tags/tool_tag_create_block.tres")
+	return tag.tooltip
+
 func _get_tool_properties_editor()->Control:
 	var ed:ToolBlockSettingsEditor = preload("res://addons/cyclops_level_builder/tools/tool_block_settings_editor.tscn").instantiate()
 	
 	ed.settings = settings
 	
 	return ed
+
+func _can_handle_object(node:Node)->bool:
+	return true
 
 func start_block_drag(viewport_camera:Camera3D, event:InputEvent):
 	var blocks_root:Node = builder.get_block_add_parent()
@@ -104,7 +119,6 @@ func start_block_drag(viewport_camera:Camera3D, event:InputEvent):
 			
 		else:
 			tool_state = ToolState.BLOCK_BASE
-
 		
 	else:
 		#print("Miss")

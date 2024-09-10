@@ -28,6 +28,7 @@ class_name CyclopsLevelBuilder
 signal active_node_changed
 signal selection_changed
 signal snapping_tool_changed
+signal tool_changed(tool:CyclopsTool)
 
 const AUTOLOAD_NAME = "CyclopsAutoload"
 const CYCLOPS_HUD_NAME = "CyclopsGlobalHud"
@@ -55,7 +56,6 @@ var always_on:bool = false:
 		update_activation()
 
 var block_create_distance:float = 10
-var tool:CyclopsTool = null
 var snapping_system:CyclopsSnappingSystem = null
 var lock_uvs:bool = false
 var tool_overlay_extrude:float = .01
@@ -67,21 +67,39 @@ var handle_screen_radius:float = 6
 
 var drag_start_radius:float = 6
 
+var active_tool:CyclopsTool = null
+var tool_list:Array[CyclopsTool]
+
 enum Mode { OBJECT, EDIT }
 var mode:Mode = Mode.OBJECT
 enum EditMode { VERTEX, EDGE, FACE }
 var edit_mode:CyclopsLevelBuilder.EditMode = CyclopsLevelBuilder.EditMode.VERTEX
 
+signal xray_mode_changed(value:bool)
+
+@export var xray_mode:bool = false:
+	get:
+		return xray_mode
+	set(value):
+		if xray_mode != value:		
+			xray_mode = value
+			xray_mode_changed.emit(value)
+
 var display_mode:DisplayMode.Type = DisplayMode.Type.MATERIAL
 
-var cached_viewport_camera:Camera3D
+#var cached_viewport_camera:Camera3D
 
 var editor_cache:Dictionary
 var editor_cache_file:String = "user://cyclops_editor_cache.json"
 
+var viewport_renderings:Array[ViewportRenderings]
+
+#var viewport_3d_showing:bool = false
+
 func get_snapping_manager()->SnappingManager:
 	var mgr:SnappingManager = SnappingManager.new()
-	mgr.snap_enabled = CyclopsAutoload.settings.get_property(CyclopsGlobalScene.SNAPPING_ENABLED)
+#	mgr.snap_enabled = CyclopsAutoload.settings.get_property(CyclopsGlobalScene.SNAPPING_ENABLED)
+	mgr.snap_enabled = true
 	mgr.snap_tool = snapping_system
 	
 	return mgr
@@ -92,13 +110,33 @@ func _get_plugin_name()->String:
 func _get_plugin_icon()->Texture2D:
 	return preload("res://addons/cyclops_level_builder/art/cyclops.svg")
 
+#func  on_main_screen_changed(screen_name:String)->void:
+	#print("EditorPlugin::on_main_screen_changed ", screen_name)
+	#pass
+
 func _enter_tree():
 	if FileAccess.file_exists(editor_cache_file):
 		#print(">> _enter_tree")
 		var text:String = FileAccess.get_file_as_string(editor_cache_file)
 		#print("load text:", text)
 		editor_cache = JSON.parse_string(text)
+	
+	for i in 4:
+		var vr:ViewportRenderings = ViewportRenderings.new()
+		viewport_renderings.append(vr)
 		
+		var viewport:SubViewport = EditorInterface.get_editor_viewport_3d(i)
+		vr.viewport = viewport
+		vr.viewport_editor_index = i
+		
+	#main_screen_changed.connect(func (screen_name:String): 
+		#print("EditorPlugin::on_main_screen_changed ", screen_name)
+		#viewport_3d_showing = screen_name == "3D"
+		#)
+	set_input_event_forwarding_always_enabled()
+	#var main_viewport_3d:SubViewport = EditorInterface.get_editor_viewport_3d()
+	#main_viewport_3d.gui_focus_changed.connect(on_viewport_focus_changed)
+	
 	add_custom_type("CyclopsScene", "Node3D", preload("nodes/cyclops_scene.gd"), preload("nodes/cyclops_blocks_icon.png"))
 	
 	add_custom_type("CyclopsBlock", "Node3D", preload("nodes/cyclops_block.gd"), preload("nodes/cyclops_blocks_icon.png"))
@@ -136,11 +174,15 @@ func _enter_tree():
 	add_control_to_bottom_panel(cyclops_console_dock, "Cyclops")
 	
 	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, main_toolbar)
+
+	add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, editor_toolbar)
+	add_control_to_bottom_panel(material_dock, "Materials")
 	
 	var editor:EditorInterface = get_editor_interface()
 	var selection:EditorSelection = editor.get_selection()
 	selection.selection_changed.connect(on_selection_changed)
 	
+	load_tools()
 	update_activation()
 
 
@@ -151,7 +193,8 @@ func _enter_tree():
 	global_scene.builder = self
 	
 	switch_to_snapping_system(SnappingSystemGrid.new())
-	switch_to_tool(ToolBlock.new())
+#	switch_to_tool(ToolBlock.new())
+	switch_to_tool_id(ToolBlock.TOOL_ID)
 
 
 func _exit_tree():
@@ -160,7 +203,12 @@ func _exit_tree():
 	#print("saving cache:", text)
 	file.store_string(JSON.stringify(editor_cache, "    "))
 	file.close()
-		
+	
+	for i in 4:
+		var vr:ViewportRenderings = viewport_renderings[i]
+		vr.dispose()
+	viewport_renderings.clear()
+	
 	# Clean-up of the plugin goes here.
 	remove_autoload_singleton(AUTOLOAD_NAME)
 	#remove_autoload_singleton(CYCLOPS_HUD_NAME)
@@ -174,9 +222,9 @@ func _exit_tree():
 	
 	remove_control_from_bottom_panel(cyclops_console_dock)
 	remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, main_toolbar)
+	remove_control_from_bottom_panel(material_dock)
 	
 	if activated:
-		remove_control_from_docks(material_dock)
 		remove_control_from_docks(convex_face_editor_dock)
 		remove_control_from_docks(tool_properties_dock)
 		remove_control_from_docks(snapping_properties_dock)
@@ -194,6 +242,20 @@ func _exit_tree():
 	main_toolbar.queue_free()
 	editor_toolbar.queue_free()
 	upgrade_cyclops_blocks_toolbar.queue_free()
+
+func load_tools():
+	if active_tool:
+		switch_to_tool_id("")
+	
+	tool_list.clear()
+	
+	for script:GDScript in config.tool_scripts:
+		#print("script: ", script.resource_path)
+		#print("type: ", typeof(script.get_class()))
+		
+		var tool:CyclopsTool = script.new()
+		tool_list.append(tool)
+
 
 func log(message:String, level:CyclopsLogger.LogLevel = CyclopsLogger.LogLevel.ERROR):
 	logger.log(message, level)
@@ -225,9 +287,12 @@ func is_active_block(block:CyclopsBlock)->bool:
 	return !nodes.is_empty() && nodes.back() == block
 	
 func get_active_block()->CyclopsBlock:
-	var selection:EditorSelection = get_editor_interface().get_selection()
+	var selection:EditorSelection = EditorInterface.get_selection()
 	var nodes:Array[Node] = selection.get_selected_nodes()
 	
+	if nodes.is_empty():
+		return null
+		
 	var back:Node = nodes.back()
 	if back is CyclopsBlock:
 		return back
@@ -238,7 +303,7 @@ func get_active_block()->CyclopsBlock:
 func get_selected_blocks()->Array[CyclopsBlock]:
 	var result:Array[CyclopsBlock]
 
-	var selection:EditorSelection = get_editor_interface().get_selection()
+	var selection:EditorSelection = EditorInterface.get_selection()
 	for node in selection.get_selected_nodes():
 		if node is CyclopsBlock:
 			result.append(node)
@@ -269,16 +334,16 @@ func update_activation():
 	if node is CyclopsBlock || always_on:
 		#print("updarting activation")
 		if !activated:
-			add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, editor_toolbar)
-			add_control_to_bottom_panel(material_dock, "Materials")
+			#add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, editor_toolbar)
+			#add_control_to_bottom_panel(material_dock, "Materials")
 			add_control_to_dock(DOCK_SLOT_RIGHT_BL, convex_face_editor_dock)
 			add_control_to_dock(DOCK_SLOT_RIGHT_BL, tool_properties_dock)
 			add_control_to_dock(DOCK_SLOT_RIGHT_BL, snapping_properties_dock)
 			activated = true
 	else:
 		if activated:
-			remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, editor_toolbar)
-			remove_control_from_bottom_panel(material_dock)
+			#remove_control_from_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, editor_toolbar)
+			#remove_control_from_bottom_panel(material_dock)
 			remove_control_from_docks(convex_face_editor_dock)
 			remove_control_from_docks(tool_properties_dock)
 			remove_control_from_docks(snapping_properties_dock)
@@ -296,8 +361,12 @@ func update_activation():
 func on_selection_changed():
 	update_activation()
 	
-	if cached_viewport_camera:
-		tool._draw_tool(cached_viewport_camera)
+	var view_cam:Camera3D = EditorInterface.get_editor_viewport_3d().get_camera_3d()
+	
+	if active_tool:
+		active_tool._draw_tool(view_cam)
+	#if cached_viewport_camera:
+		#active_tool._draw_tool(cached_viewport_camera)
 
 func _handles(object:Object):
 #	return object is CyclopsBlocks or object is CyclopsConvexBlock
@@ -308,13 +377,32 @@ func _forward_3d_draw_over_viewport(viewport_control:Control):
 	global_scene.draw_over_viewport(viewport_control)
 	#Draw on top of viweport here
 
-func _forward_3d_gui_input(viewport_camera:Camera3D, event:InputEvent):
+func _forward_3d_gui_input(viewport_camera:Camera3D, event:InputEvent)->int:
 	#print("plugin: " + event.as_text())
-	cached_viewport_camera = viewport_camera
+	#print("_forward_3d_gui_input ", event)
 	
-	if tool:
-		var result:bool = tool._gui_input(viewport_camera, event)
-		tool._draw_tool(viewport_camera)
+	#if event is InputEventKey:
+		#if event.is_pressed():
+			#var base_control:Control = EditorInterface.get_base_control()
+			#print("--properties:")
+			#for prop in base_control.get_property_list():
+				#if prop["name"].contains("camera"):
+					#print(prop)
+			#print("--methods:")
+			#for prop in base_control.get_method_list():
+				#if prop["name"].contains("camera"):
+					#print(prop)
+		
+	
+	#cached_viewport_camera = viewport_camera
+	
+	var sel_nodes:Array[Node] = EditorInterface.get_selection().get_selected_nodes()
+	
+	var active_node:Node = null if sel_nodes.is_empty() else sel_nodes.back()
+	
+	if active_tool && active_tool._can_handle_object(active_node):
+		var result:bool = active_tool._gui_input(viewport_camera, event)
+		active_tool._draw_tool(viewport_camera)
 		return EditorPlugin.AFTER_GUI_INPUT_STOP if result else EditorPlugin.AFTER_GUI_INPUT_PASS
 	
 	return EditorPlugin.AFTER_GUI_INPUT_PASS
@@ -375,18 +463,46 @@ func set_snapping_cache(tool_id:String, cache:Dictionary):
 	
 	editor_cache.snapping[tool_id] = cache
 
+func get_tool_by_id(tool_id:String)->CyclopsTool:
+	for tool:CyclopsTool in tool_list:
+		if tool._get_tool_id() == tool_id:
+			return tool
+	return null
+
+func switch_to_tool_id(tool_id:String):
+	var next_tool:CyclopsTool = get_tool_by_id(tool_id)
+	
+	if active_tool:
+		if active_tool._get_tool_id() == tool_id:
+			return
+		
+		active_tool._deactivate()
+		tool_properties_dock.set_editor(null)
+	#print("switching to ", tool_id)
+	active_tool = next_tool
+
+	if active_tool:
+		active_tool._activate(self)
+		var control:Control = active_tool._get_tool_properties_editor()
+		tool_properties_dock.set_editor(control)
+	
+	#print("emittng ", tool_id)
+	tool_changed.emit(active_tool)
+
 func switch_to_tool(_tool:CyclopsTool):
 	#print(">> switch to tool")
 	
-	if tool:
-		tool._deactivate()
+	if active_tool:
+		active_tool._deactivate()
 	
-	tool = _tool
+	active_tool = _tool
 
-	if tool:
-		tool._activate(self)
-		var control:Control = tool._get_tool_properties_editor()
+	if active_tool:
+		active_tool._activate(self)
+		var control:Control = active_tool._get_tool_properties_editor()
 		tool_properties_dock.set_editor(control)
+	
+	tool_changed.emit(active_tool)
 
 func switch_to_snapping_system(_snapping_system:CyclopsSnappingSystem):
 	if snapping_system:
@@ -459,4 +575,3 @@ func intersect_frustum_all(frustum:Array[Plane])->Array[CyclopsBlock]:
 			result.append(block)
 	
 	return result
-

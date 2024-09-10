@@ -40,7 +40,7 @@ func _update_multimesh():
 			cnode.name = "Collisions"
 			add_child(cnode)
 	var path_length: float = curve.get_baked_length()
-	var count = floor(path_length / distance_between_planks)
+	var count :int= floor(path_length / distance_between_planks)
 	if !is_instance_valid(multimeshinst):
 		printerr("Set Multimeshinst to MultimeshInstance!")
 		return
@@ -49,19 +49,19 @@ func _update_multimesh():
 	
 
 	for i in range(0, count):
-		var curve_distance = offset + distance_between_planks * i
-		var pos = curve.sample_baked(curve_distance, true)
+		var curve_distance := offset + distance_between_planks * i
+		var pos := curve.sample_baked(curve_distance, true)
 
-		var bas = Basis()
+		var bas := Basis()
 		
-		var up = curve.sample_baked_up_vector(curve_distance, true)
-		var forward = pos.direction_to(curve.sample_baked(curve_distance + 0.1, true))
+		var up := curve.sample_baked_up_vector(curve_distance, true)
+		var forward := pos.direction_to(curve.sample_baked(curve_distance + 0.1, true))
 
 		bas.y = up
 		bas.x = forward.cross(up).normalized()
 		bas.z = -forward
 		
-		var tm = Transform3D(bas, pos)
+		var tm := Transform3D(bas, pos)
 		mm.set_instance_transform(i, tm)
 		if is_instance_valid(CollisionShape):
 			var cs:Node3D = CollisionShape.instantiate() as Node3D

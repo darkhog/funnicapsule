@@ -55,6 +55,30 @@ var gizmo_translate:GizmoTranslate
 
 var settings:ToolMoveSettings = ToolMoveSettings.new()
 
+#var tag:ToolTag = preload("res://addons/cyclops_level_builder/data/tool_tags/tool_tag_move.tres")
+#var tag = preload("res://addons/cyclops_level_builder/data/tool_tags/tool_tag_move.tres")
+
+func _get_tool_id()->String:
+	return TOOL_ID
+
+func _get_tool_name()->String:
+	#print("<<1>>")
+	var tag_:ToolTag = load("res://addons/cyclops_level_builder/data/tool_tags/tool_tag_move.tres")
+	#var tag = preload("res://addons/cyclops_level_builder/data/tool_tags/tool_tag_move.tres")
+	#print("<<2>>")
+	return tag_.name
+#	return "Move"
+
+func _get_tool_icon()->Texture2D:
+	#return preload("res://addons/cyclops_level_builder/art/icons/move.svg")
+	var tag_:ToolTag = load("res://addons/cyclops_level_builder/data/tool_tags/tool_tag_move.tres")
+	return tag_.icon
+
+func _get_tool_tooltip()->String:
+	var tag_:ToolTag = load("res://addons/cyclops_level_builder/data/tool_tags/tool_tag_move.tres")
+	return tag_.tooltip
+	#return "Select and move blocks."
+
 func _get_tool_properties_editor()->Control:
 	var ed:ToolMoveSettingsEditor = preload("res://addons/cyclops_level_builder/tools/tool_move_settings_editor.tscn").instantiate()
 	
@@ -62,8 +86,9 @@ func _get_tool_properties_editor()->Control:
 	
 	return ed
 	
-func _get_tool_id()->String:
-	return TOOL_ID
+func _can_handle_object(node:Node)->bool:
+	return node is CyclopsBlock
+#	return true
 
 func draw_gizmo(viewport_camera:Camera3D):
 	var global_scene:CyclopsGlobalScene = builder.get_global_scene()
@@ -299,19 +324,32 @@ func _gui_input(viewport_camera:Camera3D, event:InputEvent)->bool:
 
 					var result:IntersectResults = builder.intersect_ray_closest(origin, dir)
 					
-					#print("Invokke select %s" % result)
-					var cmd:CommandSelectBlocks = CommandSelectBlocks.new()
-					cmd.builder = builder
-					cmd.selection_type = Selection.choose_type(e.shift_pressed, e.ctrl_pressed)
-
 					if result:
+						#print("Invokke select %s" % result)
+						var cmd:CommandSelectBlocks = CommandSelectBlocks.new()
+						cmd.builder = builder
+						cmd.selection_type = Selection.choose_type(e.shift_pressed, e.ctrl_pressed)
+
 						cmd.block_paths.append(result.object.get_path())
 						
-					if cmd.will_change_anything():
-						var undo:EditorUndoRedoManager = builder.get_undo_redo()
-						cmd.add_to_undo_manager(undo)
-					
+						if cmd.will_change_anything():
+							var undo:EditorUndoRedoManager = builder.get_undo_redo()
+							cmd.add_to_undo_manager(undo)
+					#else:
+						#var space_state = EditorInterface.get_editor_viewport_3d().find_world_3d().direct_space_state
+						#var query = PhysicsRayQueryParameters3D.create(origin, origin + dir * 1000)
+						#var pick_result = space_state.intersect_ray(query)
+						#print(pick_result)
+						#if pick_result.has("collider"):
+							#EditorInterface.get_selection().clear()
+							#EditorInterface.get_selection().add_node(pick_result["collider"])
+						#var viewport:SubViewport = EditorInterface.get_editor_viewport_3d()
+						#viewport.push_input()
+						#Input.parse_input_event()
+							
+					#print("tool state up")
 					tool_state = ToolState.NONE
+					
 
 				elif tool_state == ToolState.MOVE_BLOCK:
 					
@@ -369,6 +407,7 @@ func _gui_input(viewport_camera:Camera3D, event:InputEvent)->bool:
 		if tool_state == ToolState.READY:
 			var offset:Vector2 = e.position - event_start.position
 			if offset.length_squared() > MathUtil.square(builder.drag_start_radius):
+				#print("start drag")
 				start_drag(viewport_camera, event_start)
 
 			return true

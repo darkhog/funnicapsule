@@ -36,10 +36,25 @@ var tool_state:ToolState = ToolState.READY
 func _get_tool_id()->String:
 	return TOOL_ID
 
+func _show_in_toolbar()->bool:
+	return false
+	
+func _get_tool_name()->String:
+	return "Duplicate"
+
+func _get_tool_icon()->Texture2D:
+	return null
+
+func _get_tool_tooltip()->String:
+	return "Duplicate selected blocks"
+
 func _draw_tool(viewport_camera:Camera3D):
 	var global_scene:CyclopsGlobalScene = builder.get_global_scene()
 	global_scene.clear_tool_mesh()
 	global_scene.draw_selected_blocks(viewport_camera)
+
+func _can_handle_object(node:Node)->bool:
+	return node is CyclopsBlock
 
 func _gui_input(viewport_camera:Camera3D, event:InputEvent)->bool:	
 	
@@ -57,7 +72,8 @@ func _gui_input(viewport_camera:Camera3D, event:InputEvent)->bool:
 						cmd_duplicate.add_to_undo_manager(undo)
 					
 					tool_state = ToolState.DONE
-					builder.switch_to_tool(ToolBlock.new())
+#					builder.switch_to_tool(ToolBlock.new())
+					builder.switch_to_tool_id(ToolBlock.TOOL_ID)
 					
 		return true
 					

@@ -56,6 +56,18 @@ var average_normal:Vector3 = Vector3.UP
 func _get_tool_id()->String:
 	return TOOL_ID
 
+func _get_tool_name()->String:
+	var tag:ToolTag = load("res://addons/cyclops_level_builder/data/tool_tags/tool_tag_edit_edge.tres")
+	return tag.name
+
+func _get_tool_icon()->Texture2D:
+	var tag:ToolTag = load("res://addons/cyclops_level_builder/data/tool_tags/tool_tag_edit_edge.tres")
+	return tag.icon
+
+func _get_tool_tooltip()->String:
+	var tag:ToolTag = load("res://addons/cyclops_level_builder/data/tool_tags/tool_tag_edit_edge.tres")
+	return tag.tooltip
+
 func _get_tool_properties_editor()->Control:
 	var ed:ToolEditEdgeSettingsEditor = preload("res://addons/cyclops_level_builder/tools/tool_edit_edge_settings_editor.tscn").instantiate()
 	
@@ -532,10 +544,10 @@ func _gui_input(viewport_camera:Camera3D, event:InputEvent)->bool:
 							var origin:Vector3 = viewport_camera.project_ray_origin(e.position)
 #							var dir:Vector3 = viewport_camera.project_ray_normal(e.position)
 
-							var global_scene:CyclopsGlobalScene = builder.get_global_scene()
+							#var global_scene:CyclopsGlobalScene = builder.get_global_scene()
 
 							#Obstruction check
-							if !global_scene.xray_mode && builder.display_mode != DisplayMode.Type.WIRE:
+							if !builder.xray_mode && builder.display_mode != DisplayMode.Type.WIRE:
 								var result:IntersectResults = builder.intersect_ray_closest(origin, point_w - origin)
 								if result:
 									var res_point_w:Vector3 = result.get_world_position()
@@ -633,7 +645,7 @@ func _gui_input(viewport_camera:Camera3D, event:InputEvent)->bool:
 			#drag_to = drag_handle_start_pos + offset
 			
 			cmd_move_edge.move_offset = offset
-			cmd_move_edge.do_it()
+			cmd_move_edge.pre_do_it()
 
 			setup_tool()
 #			draw_tool()
