@@ -19020,6 +19020,7 @@ directional_shadow_max_distance = 256.0
 [node name="MUSIC" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("13_bsy6j")
 autoplay = true
+bus = &"Music"
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = ExtResource("5_5ogs4")
