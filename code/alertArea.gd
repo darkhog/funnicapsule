@@ -9,6 +9,7 @@ func _ready() -> void:
 func _on_body_entered(body:Node3D):
 	if body.name=="PlayerBody":
 		Globals.lockCamera=false
+		#We need to wait two frames, otherwise the mouse won't unlock.
 		await get_tree().process_frame
 		await get_tree().process_frame
 		OS.alert(text,title)
