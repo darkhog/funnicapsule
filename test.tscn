@@ -1,4 +1,4 @@
-[gd_scene load_steps=299 format=4 uid="uid://chscmfoadg3o8"]
+[gd_scene load_steps=300 format=4 uid="uid://chscmfoadg3o8"]
 
 [ext_resource type="Script" path="res://addons/cyclops_level_builder/nodes/cyclops_block.gd" id="1_5k2b0"]
 [ext_resource type="Script" path="res://addons/cyclops_level_builder/resources/convex_block_data.gd" id="2_5ealq"]
@@ -15,6 +15,7 @@
 [ext_resource type="Script" path="res://code/followthepath.gd" id="9_gidd1"]
 [ext_resource type="PhysicsMaterial" uid="uid://cosbg0v00t1y5" path="res://materials/physicsmaterial/roughplatform.tres" id="9_uusnf"]
 [ext_resource type="Material" uid="uid://rdhrhgrb78ls" path="res://addons/cyclops_level_builder/materials/grid.tres" id="10_dgs5u"]
+[ext_resource type="Script" path="res://code/movesky.gd" id="13_i6xe3"]
 
 [sub_resource type="Resource" id="Resource_eovnl"]
 script = ExtResource("2_5ealq")
@@ -3363,6 +3364,10 @@ shadow_enabled = true
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = ExtResource("4_knugq")
 camera_attributes = ExtResource("8_s0pjq")
+script = ExtResource("13_i6xe3")
+SpeedX = 6.0
+SpeedY = 2.0
+SpeedZ = 6.0
 
 [node name="AnimatableBody3D" type="AnimatableBody3D" parent="."]
 transform = Transform3D(-0.616966, 1.17633e-10, -0.786985, -1.16414e-10, 0.999995, 2.12457e-09, 0.786984, -5.57046e-11, -0.616966, 33.0135, 6.98543, -33.0159)

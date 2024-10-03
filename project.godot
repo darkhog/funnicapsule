@@ -63,7 +63,7 @@ version_control/autoload_on_startup=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/anthonyec.camera_preview/plugin.cfg", "res://addons/asset_dock/plugin.cfg", "res://addons/cyclops_level_builder/plugin.cfg", "res://addons/godot-openmpt/plugin.cfg", "res://addons/script-ide/plugin.cfg")
+enabled=PackedStringArray("res://addons/anthonyec.camera_preview/plugin.cfg", "res://addons/asset_dock/plugin.cfg", "res://addons/block_code/plugin.cfg", "res://addons/cyclops_level_builder/plugin.cfg", "res://addons/godot-openmpt/plugin.cfg", "res://addons/script-ide/plugin.cfg")
 
 [input]
 
@@ -121,6 +121,7 @@ locale/locale_filter_mode=0
 
 3d/run_on_separate_thread=true
 common/physics_jitter_fix=0.0
+3d/physics_engine="JoltPhysics3D"
 jolt_3d/collisions/areas_detect_static_bodies=true
 jolt_3d/collisions/report_all_kinematic_contacts=true
 jolt_3d/solver/velocity_iterations=20

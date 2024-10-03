@@ -12,7 +12,7 @@ extends Path3D
 	set(value):
 		distance_between_prefabs = value
 		is_dirty = true
-var is_dirty = false
+var is_dirty:bool = true
 @export var rotatePrefabAlongPath:bool=false:
 	set(value):
 		rotatePrefabAlongPath = value
@@ -23,15 +23,17 @@ var is_dirty = false
 		is_dirty = true 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	self.connect("curve_changed",_on_curve_changed)
+	if !self.curve_changed.is_connected(_on_curve_changed):
+		self.connect("curve_changed",_on_curve_changed)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if is_dirty:
 		_update_multimesh()
-
 		is_dirty = false
+	if !self.curve_changed.is_connected(_on_curve_changed):
+		self.connect("curve_changed",_on_curve_changed)
 
 func _update_multimesh():
 	var cnode:Node3D
@@ -44,7 +46,7 @@ func _update_multimesh():
 			cnode.name = "Prefabs"
 			add_child(cnode)
 	var path_length: float = curve.get_baked_length()
-	var count :int= floor(path_length / distance_between_prefabs)
+	var count :int= roundf(path_length / distance_between_prefabs)
 	for i in range(0, count):
 		var curve_distance := offset + distance_between_prefabs * i
 		var pos := curve.sample_baked(curve_distance, true)

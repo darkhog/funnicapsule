@@ -1,6 +1,11 @@
 extends RigidBody3D
 @export var onGroundShape:ShapeCast3D
+@export var stepup_aircast:ShapeCast3D
+@export var stepup_groundcast:ShapeCast3D
+@export var backstepup_aircast:ShapeCast3D
+@export var backstepup_groundcast:ShapeCast3D
 @export var moveForce:float=7
+@export var stepForce:float=69
 @export var jumpForce:float=3.5
 @export var GroundDampeningFactor:float = 4;
 @export var CamNode:Node3D
@@ -12,6 +17,7 @@ extends RigidBody3D
 @export var DblJumpSound:AudioStream
 @export var ShootSound:AudioStream
 @export var HurtSound:AudioStream
+var byStep:bool=false
 var InternalJumpCount:int
 var onGround:bool = true
 var scheduleDeath:bool=false
@@ -35,13 +41,25 @@ func movement_handle(normal:float)->void:
 		return
 	if normal>0.666 || !onGround:
 		if Input.is_action_pressed("forward"):
-			applyPlayerForces(Vector3(-moveForce,0,0),180)
+			if (!byStep):
+				applyPlayerForces(Vector3(-moveForce,0,0),180)
+			else:
+				applyPlayerForces(Vector3(-moveForce,stepForce,0),180)
 		if Input.is_action_pressed("backward"):
-			applyPlayerForces(Vector3(moveForce,0,0),0)
+			if (!byStep):
+				applyPlayerForces(Vector3(moveForce,0,0),0)
+			else:
+				applyPlayerForces(Vector3(moveForce,stepForce,0),0)
 		if Input.is_action_pressed("left"):
-			applyPlayerForces(Vector3(0,0,moveForce),270)
+			if (!byStep):
+				applyPlayerForces(Vector3(0,0,moveForce),270)
+			else:
+				applyPlayerForces(Vector3(0,stepForce,moveForce),270)
 		if Input.is_action_pressed("right"):
-			applyPlayerForces(Vector3(0,0,-moveForce),90)
+			if (!byStep):
+				applyPlayerForces(Vector3(0,0,-moveForce),90)
+			else:
+				applyPlayerForces(Vector3(0,stepForce,-moveForce),90)
 	# Jumpy McJump
 	if onGround:
 		InternalJumpCount = ExtraJumpsZeroBased
@@ -59,6 +77,7 @@ func movement_handle(normal:float)->void:
 func _physics_process(_delta)->void:
 	#basic ground check
 	onGround = !onGroundShape.collision_result.is_empty()
+	byStep = ((!stepup_aircast.is_colliding()) && (stepup_groundcast.is_colliding())) || ((!backstepup_aircast.is_colliding()) && (backstepup_groundcast.is_colliding()))
 	#checking ground normal to ensure we can jump and it's not a fake signal from
 	#a wall or something.
 	if !onGround:

@@ -4,8 +4,10 @@ extends Area3D
 @export var SoundToPlay:AudioStream
 var streamPlayer: AudioStreamPlayer
 var touched:bool
+var once:bool=false
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	
 	connect("body_entered",_on_body_entered)
 	streamPlayer = AudioStreamPlayer.new()
 	streamPlayer.stream = SoundToPlay
@@ -13,7 +15,7 @@ func _ready() -> void:
 	streamPlayer.autoplay = false
 	streamPlayer.connect("finished",streamFinished)
 	self.add_child(streamPlayer)
-	self.rotation_degrees.y = sin(self.position.x)*self.position.z*cos(self.position.y)
+	
 
 func streamFinished():
 	if touched:
@@ -30,4 +32,9 @@ func _on_body_entered(body:Node3D):
 			if child is Node3D:
 				child.visible=false
 func _process(_delta)->void:
-	self.rotate_y(4*_delta)
+	self.rotate_y(-4*_delta)
+	if (!once):
+		#Globals.DebugPrint((sin(self.global_position.x+self.global_position.y+self.global_position.z))*1)
+		#have to do it like this, because collectibles spawned with PrefabOverPath.gd will not report the correct position in _ready.
+		self.rotation.y = (sin(self.global_position.x+self.global_position.y+self.global_position.z))*1
+		once=true

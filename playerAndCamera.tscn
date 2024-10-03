@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://cqu6j7wde77yx"]
+[gd_scene load_steps=16 format=3 uid="uid://cqu6j7wde77yx"]
 
 [ext_resource type="PhysicsMaterial" uid="uid://cmjo4d6fk86" path="res://materials/physicsmaterial/player.tres" id="1_7cbay"]
 [ext_resource type="PackedScene" uid="uid://ctaisndoga7m8" path="res://addons/quick_primitives/scenes/Capsule.tscn" id="1_kfg1m"]
@@ -16,26 +16,39 @@
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_jenem"]
 radius = 0.45
 
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_yrfrg"]
+radius = 0.1
+height = 0.3
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1w2qt"]
+radius = 0.1
+height = 0.8
+
 [sub_resource type="AudioStreamPolyphonic" id="AudioStreamPolyphonic_74xuo"]
 
 [node name="Player" type="Node3D"]
 metadata/lockCamera = true
 
-[node name="PlayerBody" type="RigidBody3D" parent="." node_paths=PackedStringArray("onGroundShape", "CamNode", "PlayerVisual", "aPlayer")]
+[node name="PlayerBody" type="RigidBody3D" parent="." node_paths=PackedStringArray("onGroundShape", "stepup_aircast", "stepup_groundcast", "backstepup_aircast", "backstepup_groundcast", "CamNode", "PlayerVisual", "aPlayer")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.014007, 0)
 collision_layer = 128
 collision_mask = 4294967167
 axis_lock_angular_x = true
 axis_lock_angular_y = true
 axis_lock_angular_z = true
-mass = 8.24
+mass = 10.0
 physics_material_override = ExtResource("1_7cbay")
 can_sleep = false
 continuous_cd = true
 script = ExtResource("1_n1wsb")
 onGroundShape = NodePath("CollisionShape3D/Capsule/ShapeCast3D")
+stepup_aircast = NodePath("CollisionShape3D/Capsule/stepup_aircast")
+stepup_groundcast = NodePath("CollisionShape3D/Capsule/stepup_groundcast")
+backstepup_aircast = NodePath("CollisionShape3D/Capsule/backstepup_aircast")
+backstepup_groundcast = NodePath("CollisionShape3D/Capsule/backstepup_groundcast")
 moveForce = 160.0
-jumpForce = 69.0
+stepForce = 112.0
+jumpForce = 88.0
 CamNode = NodePath("CollisionShape3D/SpringArm3D")
 PlayerVisual = NodePath("CollisionShape3D/Capsule")
 aPlayer = NodePath("AudioPlayer")
@@ -74,6 +87,30 @@ shape = SubResource("CapsuleShape3D_jenem")
 target_position = Vector3(0, -0.04, 0)
 max_results = 1
 collision_mask = 4294967167
+
+[node name="stepup_aircast" type="ShapeCast3D" parent="PlayerBody/CollisionShape3D/Capsule"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0.421631)
+shape = SubResource("CapsuleShape3D_yrfrg")
+target_position = Vector3(0, -0.1, 0)
+max_results = 1
+
+[node name="stepup_groundcast" type="ShapeCast3D" parent="PlayerBody/CollisionShape3D/Capsule"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, -0.753181, 0.312401)
+shape = SubResource("CapsuleShape3D_1w2qt")
+target_position = Vector3(0, -0.1, 0)
+max_results = 1
+
+[node name="backstepup_aircast" type="ShapeCast3D" parent="PlayerBody/CollisionShape3D/Capsule"]
+transform = Transform3D(-1, 8.74228e-08, 3.82137e-15, 0, -4.37114e-08, 1, 8.74228e-08, 1, 4.37114e-08, 0, 0, -0.392425)
+shape = SubResource("CapsuleShape3D_yrfrg")
+target_position = Vector3(0, -0.1, 0)
+max_results = 1
+
+[node name="backstepup_groundcast" type="ShapeCast3D" parent="PlayerBody/CollisionShape3D/Capsule"]
+transform = Transform3D(-1, 8.74228e-08, 3.82137e-15, 0, -4.37114e-08, 1, 8.74228e-08, 1, 4.37114e-08, 0, -0.753181, -0.300685)
+shape = SubResource("CapsuleShape3D_1w2qt")
+target_position = Vector3(0, -0.1, 0)
+max_results = 1
 
 [node name="SpringArm3D" type="SpringArm3D" parent="PlayerBody/CollisionShape3D" node_paths=PackedStringArray("PlayerObj")]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
