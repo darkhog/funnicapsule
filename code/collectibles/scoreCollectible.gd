@@ -2,8 +2,10 @@ extends Area3D
 
 @export var scoreValue:int=10
 @export var SoundToPlay:AudioStream
+@export var visualInstance:Node3D
 var streamPlayer: AudioStreamPlayer
 var touched:bool
+var curframe:int
 var once:bool=false
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -31,10 +33,15 @@ func _on_body_entered(body:Node3D):
 		for child in self.get_children():
 			if child is Node3D:
 				child.visible=false
+
 func _process(_delta)->void:
-	self.rotate_y(-4*_delta)
+	#if self.global_position.distance_to(Globals.playerPosition)<20:
+	visualInstance.rotate_y(-4*_delta)
+	#elif curframe % 4 ==0:
+	#	visualInstance.rotate_y((-4*_delta)*4)
 	if (!once):
-		#Globals.DebugPrint((sin(self.global_position.x+self.global_position.y+self.global_position.z))*1)
-		#have to do it like this, because collectibles spawned with PrefabOverPath.gd will not report the correct position in _ready.
-		self.rotation.y = (sin(self.global_position.x+self.global_position.y+self.global_position.z))*1
+		#have to do it like this, because collectibles spawned with PrefabOverPath.gd 
+		#will not report the correct position in _ready.
+		visualInstance.rotation.y = (sin(visualInstance.global_position.x+visualInstance.global_position.y+visualInstance.global_position.z))*1
 		once=true
+	curframe+=1

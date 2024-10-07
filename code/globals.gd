@@ -33,7 +33,7 @@ const FLAG_29 :int= 29
 const FLAG_30 :int= 30
 const FLAG_31 :int= 31
 const MAX_HP:float=100
-
+var playerPosition:Vector3
 var consolelog:String = "Ready."
 var playerflags:int
 var playerHealth:float:

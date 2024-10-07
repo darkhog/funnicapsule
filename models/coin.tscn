@@ -4,9 +4,8 @@
 [ext_resource type="Material" uid="uid://db8fg8baouk8b" path="res://materials/gold.tres" id="2_kk62x"]
 [ext_resource type="AudioStream" uid="uid://b8w1d8xlo7q20" path="res://voices/coin.ogg" id="2_rbujw"]
 
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_cdtbw"]
-height = 0.09
-radius = 0.26
+[sub_resource type="SphereShape3D" id="SphereShape3D_8bkwj"]
+radius = 0.3
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_g6j6m"]
 
@@ -42,15 +41,16 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_1oyrp")
 
-[node name="Coin" type="Area3D"]
+[node name="Coin" type="Area3D" node_paths=PackedStringArray("visualInstance")]
 collision_layer = 4
 collision_mask = 128
 script = ExtResource("1_vh10a")
 SoundToPlay = ExtResource("2_rbujw")
+visualInstance = NodePath("Cylinder")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
-shape = SubResource("CylinderShape3D_cdtbw")
+shape = SubResource("SphereShape3D_8bkwj")
 
 [node name="Cylinder" type="MeshInstance3D" parent="."]
 gi_mode = 2

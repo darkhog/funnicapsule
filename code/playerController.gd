@@ -132,6 +132,7 @@ func GameOver()->void:
 	get_tree().change_scene_to_file("res://scenes/GameOver.tscn")
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta)->void:
+	Globals.playerPosition=self.global_position
 	if scheduleDeath:
 		if !aPlayer.playing:
 			respawn()

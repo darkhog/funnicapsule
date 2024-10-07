@@ -65,6 +65,15 @@ version_control/autoload_on_startup=true
 
 enabled=PackedStringArray("res://addons/anthonyec.camera_preview/plugin.cfg", "res://addons/asset_dock/plugin.cfg", "res://addons/block_code/plugin.cfg", "res://addons/cyclops_level_builder/plugin.cfg", "res://addons/godot-openmpt/plugin.cfg", "res://addons/script-ide/plugin.cfg")
 
+[file_customization]
+
+folder_colors={
+"res://code/": "green",
+"res://levels/": "purple",
+"res://models/": "gray",
+"res://textures/": "teal"
+}
+
 [input]
 
 CameraZoomIn={
@@ -126,7 +135,7 @@ jolt_3d/collisions/areas_detect_static_bodies=true
 jolt_3d/collisions/report_all_kinematic_contacts=true
 jolt_3d/solver/velocity_iterations=20
 jolt_3d/solver/position_iterations=10
-jolt_3d/limits/max_bodies=10253
+jolt_3d/limits/max_bodies=2000000
 
 [rendering]
 
