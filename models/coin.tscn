@@ -54,6 +54,9 @@ shape = SubResource("SphereShape3D_8bkwj")
 
 [node name="Cylinder" type="MeshInstance3D" parent="."]
 gi_mode = 2
+visibility_range_begin_margin = 0.2
+visibility_range_end = 86.0
+visibility_range_fade_mode = 1
 mesh = SubResource("ArrayMesh_lb3hm")
 skeleton = NodePath("")
 surface_material_override/0 = ExtResource("2_kk62x")

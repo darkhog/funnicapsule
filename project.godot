@@ -24,6 +24,7 @@ boot_splash/minimum_display_time=5000
 
 Globals="*res://code/globals.gd"
 CyclopsAutoload="*res://addons/cyclops_level_builder/cyclops_global_scene.tscn"
+DebugMenu="*res://addons/debug_menu/debug_menu.tscn"
 
 [compression]
 
@@ -63,7 +64,7 @@ version_control/autoload_on_startup=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/anthonyec.camera_preview/plugin.cfg", "res://addons/asset_dock/plugin.cfg", "res://addons/block_code/plugin.cfg", "res://addons/cyclops_level_builder/plugin.cfg", "res://addons/godot-openmpt/plugin.cfg", "res://addons/script-ide/plugin.cfg")
+enabled=PackedStringArray("res://addons/anthonyec.camera_preview/plugin.cfg", "res://addons/asset_dock/plugin.cfg", "res://addons/block_code/plugin.cfg", "res://addons/cyclops_level_builder/plugin.cfg", "res://addons/debug_menu/plugin.cfg", "res://addons/godot-openmpt/plugin.cfg", "res://addons/script-ide/plugin.cfg")
 
 [file_customization]
 
@@ -156,5 +157,6 @@ global_illumination/sdfgi/frames_to_converge=2
 global_illumination/sdfgi/frames_to_update_lights=3
 limits/opengl/max_renderable_lights=64
 limits/opengl/max_lights_per_object=16
-anti_aliasing/quality/msaa_2d=2
-anti_aliasing/quality/msaa_3d=3
+anti_aliasing/quality/msaa_2d=1
+anti_aliasing/quality/msaa_3d=1
+anti_aliasing/quality/use_debanding=true

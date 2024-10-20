@@ -7,6 +7,7 @@ var streamPlayer: AudioStreamPlayer
 var touched:bool
 var curframe:int
 var once:bool=false
+var distToPlayer:float=0
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	
@@ -35,13 +36,16 @@ func _on_body_entered(body:Node3D):
 				child.visible=false
 
 func _process(_delta)->void:
-	#if self.global_position.distance_to(Globals.playerPosition)<20:
-	visualInstance.rotate_y(-4*_delta)
-	#elif curframe % 4 ==0:
-	#	visualInstance.rotate_y((-4*_delta)*4)
+	if distToPlayer==0 or curframe%15==0:
+		distToPlayer=self.global_position.distance_to(Globals.playerPosition)
+	if distToPlayer<40:
+		visualInstance.rotate_y(-4*_delta)
+	elif curframe % 8 ==0:
+		visualInstance.rotate_y((-4*_delta)*8)
 	if (!once):
 		#have to do it like this, because collectibles spawned with PrefabOverPath.gd 
 		#will not report the correct position in _ready.
 		visualInstance.rotation.y = (sin(visualInstance.global_position.x+visualInstance.global_position.y+visualInstance.global_position.z))*1
 		once=true
+	
 	curframe+=1
