@@ -1,5 +1,12 @@
 @tool
 extends Path3D
+var internalCoinCount:int=0:
+	set(value):
+		internalCoinCount=value
+		prefabCount=value
+@export var prefabCount:int=0:
+	set(value):
+		prefabCount=internalCoinCount
 @export var Prefab:PackedScene:
 	set(value):
 		Prefab = value
@@ -47,6 +54,7 @@ func _update_multimesh():
 			add_child(cnode)
 	var path_length: float = curve.get_baked_length()
 	var count :int= roundf(path_length / distance_between_prefabs)
+	internalCoinCount=0
 	for i in range(0, count):
 		var curve_distance := offset + distance_between_prefabs * i
 		var pos := curve.sample_baked(curve_distance, true)
@@ -67,6 +75,7 @@ func _update_multimesh():
 		if is_instance_valid(Prefab):
 			var pf:Node3D = Prefab.instantiate() #as Node3D
 			cnode.add_child(pf)
+			internalCoinCount+=1
 			pf.transform = tm
 
 
