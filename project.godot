@@ -76,6 +76,10 @@ folder_colors={
 "res://textures/": "teal"
 }
 
+[filesystem]
+
+import/blender/enabled=false
+
 [input]
 
 CameraZoomIn={

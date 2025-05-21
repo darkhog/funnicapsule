@@ -36,12 +36,13 @@ func _on_body_entered(body:Node3D):
 				child.visible=false
 
 func _process(_delta)->void:
-	if distToPlayer==0 or curframe%15==0:
-		distToPlayer=self.global_position.distance_to(Globals.playerPosition)
-	if distToPlayer<40:
-		visualInstance.rotate_y(-4*_delta)
-	elif curframe % 8 ==0:
-		visualInstance.rotate_y((-4*_delta)*8)
+	#if distToPlayer==0 or curframe%15==0:
+	#	distToPlayer=self.global_position.distance_to(Globals.playerPosition)
+	#if distToPlayer<40:
+	#	visualInstance.rotate_y(-4*_delta)
+	#elif curframe % 8 ==0:
+	#	visualInstance.rotate_y((-4*_delta)*8)
+	visualInstance.rotate_y(-4*_delta)
 	if (!once):
 		#have to do it like this, because collectibles spawned with PrefabOverPath.gd 
 		#will not report the correct position in _ready.
