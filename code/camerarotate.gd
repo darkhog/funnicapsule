@@ -22,8 +22,9 @@ func _ready()->void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta:float)->void:
+	#Globals.DebugPrint(Globals.lockCamera)
 	if Globals.lockCamera:
-		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		#Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		rotate_object_local(Vector3.UP,Input.get_last_mouse_velocity().x*delta*(rotationstrength*-1))
 		rotate_object_local(Vector3.LEFT,Input.get_last_mouse_velocity().y*delta*rotationstrength)
 		rotation.z = 0
@@ -35,5 +36,5 @@ func _process(delta:float)->void:
 			scrolldelta = scrolldelta+1
 		spring_length = spring_length + (scrolldelta*delta*zoomStrength)
 		spring_length = clamp(spring_length,minspringlen,maxspringlen)
-	else:
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	#else:
+		#Input.mouse_mode = Input.MOUSE_MODE_VISIBLE

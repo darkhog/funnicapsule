@@ -149,7 +149,6 @@ textures/canvas_textures/default_texture_filter=0
 lights_and_shadows/use_physical_light_units=true
 lights_and_shadows/directional_shadow/soft_shadow_filter_quality=3
 lights_and_shadows/positional_shadow/soft_shadow_filter_quality=3
-reflections/sky_reflections/roughness_layers=12
 global_illumination/gi/use_half_resolution=true
 global_illumination/voxel_gi/quality=1
 camera/depth_of_field/depth_of_field_bokeh_shape=0

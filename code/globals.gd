@@ -44,7 +44,19 @@ var playerHealth:float:
 var playername:String
 var playerLives:int
 var score:int
-var lockCamera:bool = true
+var lockCamera:bool = true:
+	set (value):
+		lockCamera = value
+		if value:
+			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		else:
+			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	get:
+		if lockCamera:
+			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		else:
+			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		return lockCamera
 func DebugPrint(thing) ->void:
 	print(thing)
 	consolelog+="\n" + str(thing)
