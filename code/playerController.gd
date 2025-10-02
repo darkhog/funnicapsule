@@ -118,7 +118,7 @@ func die()->void:
 		respawn()
 #handles resetting the player health and decreasing lives.
 func respawn()->void:
-	Globals.playerHealth=100
+	Globals.playerHealth=Globals.MAX_HP
 	Globals.playerLives-=1
 	if Globals.playerLives<0:
 		GameOver()

@@ -1,10 +1,11 @@
-extends Area3D
+extends CollisionObject3D
 
 @export var hurtAmount:float=5
-
+signal hurtingPlayer
 func _ready() -> void:
 	connect("body_entered",_on_body_entered)
 
 func _on_body_entered(body:Node3D):
 	if body.name=="PlayerBody":
 		body.hurtPlayer(hurtAmount)
+		emit_signal("hurtingPlayer")
