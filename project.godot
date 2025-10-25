@@ -11,6 +11,10 @@ config_version=5
 [application]
 
 config/name="funni capsule"
+config/name_localized={
+"ru": "Putin is my bitch",
+"ru_RU": "Putin is my bitch"
+}
 config/tags=PackedStringArray("3d_platformer", "game")
 run/main_scene="res://Menu.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
@@ -35,6 +39,7 @@ formats/gzip/compression_level=9
 
 [debug]
 
+file_logging/enable_file_logging.pc=false
 gdscript/warnings/untyped_declaration=1
 gdscript/warnings/inferred_declaration=1
 gdscript/warnings/unsafe_property_access=1
@@ -134,9 +139,10 @@ locale/locale_filter_mode=0
 
 [navigation]
 
-3d/default_cell_size=0.5
-3d/default_cell_height=0.5
+3d/default_cell_size=0.4
+3d/default_cell_height=0.4
 3d/merge_rasterizer_cell_scale=0.001
+baking/use_crash_prevention_checks=false
 
 [physics]
 

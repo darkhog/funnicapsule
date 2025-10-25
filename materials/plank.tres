@@ -1,0 +1,21 @@
+[gd_resource type="StandardMaterial3D" load_steps=3 format=3 uid="uid://b1ovigptn2rld"]
+
+[ext_resource type="Texture2D" uid="uid://d0uq0lynqsk08" path="res://textures/bark.png" id="1_r10tj"]
+[ext_resource type="Texture2D" uid="uid://qslccg0u8ejw" path="res://textures/noisewrap.png" id="2_db0s5"]
+
+[resource]
+diffuse_mode = 1
+specular_mode = 2
+albedo_color = Color(0.75, 0.44375, 0.225, 1)
+albedo_texture = ExtResource("1_r10tj")
+metallic_specular = 0.0
+normal_scale = 2.54
+normal_texture = ExtResource("2_db0s5")
+ao_light_affect = 0.16
+ao_texture_channel = 4
+uv1_scale = Vector3(2, 2, 2)
+texture_filter = 4
+grow_amount = 0.512
+distance_fade_mode = 2
+distance_fade_min_distance = 1400.0
+distance_fade_max_distance = 420.0

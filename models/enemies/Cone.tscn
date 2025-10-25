@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://cuav57s7vejdq"]
+[gd_scene load_steps=8 format=3 uid="uid://cuav57s7vejdq"]
 
 [ext_resource type="Script" path="res://code/hurtArea.gd" id="1_1u4ov"]
 [ext_resource type="ArrayMesh" uid="uid://yrsxxmd1wp7b" path="res://models/enemies/cone.res" id="1_30sje"]
 [ext_resource type="Script" path="res://code/AssignRandomColor.gd" id="2_7nrpn"]
 [ext_resource type="Script" path="res://code/enemies/cone_nav.gd" id="4_rni3o"]
 [ext_resource type="AudioStream" uid="uid://cd3vt7kyjq147" path="res://voices/cone.ogg" id="5_rni3o"]
+[ext_resource type="Script" path="res://code/PlaySoundRandomly.gd" id="6_sw313"]
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_7nrpn"]
 points = PackedVector3Array(-0.666, 0, -0.000130355, -0.576818, 0, -0.33313, -0.576818, 0, 0.33287, -0.000130355, 1.5, -0.000130355, -0.33313, 0, -0.576818, -0.33313, 0, 0.576687, -0.125951, 0.341376, 0.609022, -0.124647, 0.403778, 0.574862, -0.216567, 0.754552, 0.277848, -0.215394, 0.818422, 0.241992, 0.328828, 0.814458, 0.0616716, 0.576687, 0, -0.33313, 0.33287, 0, -0.576818, -0.000130355, 0, -0.666, 0.0212526, 0.882439, 0.36364, 0.171194, 0.814458, 0.297145, 0.405624, 0.303348, 0.422704, -0.000130355, 0, 0.666, -0.130253, 0.287197, 0.62193, 0.33287, 0, 0.576687, 0.0200791, 0.818422, 0.399496, 0.666, 0, -0.000130355, 0.576687, 0, 0.33287)
@@ -24,7 +25,7 @@ collision_mask = 128
 sync_to_physics = false
 
 [node name="CollisionShape3D_2" type="CollisionShape3D" parent="AnimatableBody3D"]
-transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, 0, 0, 0)
+transform = Transform3D(1.025, 0, 0, 0, 1.025, 0, 0, 0, 1.025, 0, 0, 0)
 shape = SubResource("ConvexPolygonShape3D_7nrpn")
 
 [node name="CollisionShape3D_2" type="CollisionShape3D" parent="."]
@@ -33,7 +34,7 @@ shape = SubResource("ConvexPolygonShape3D_7nrpn")
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="." node_paths=PackedStringArray("visInst")]
 path_desired_distance = 0.5
 target_desired_distance = 0.1
-path_height_offset = 0.75
+path_height_offset = 0.5
 script = ExtResource("4_rni3o")
 visInst = NodePath("../Cone")
 
@@ -43,7 +44,16 @@ script = ExtResource("2_7nrpn")
 material_instance = 1
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 stream = ExtResource("5_rni3o")
+attenuation_model = 2
+volume_db = 6.66
+max_db = 6.0
+script = ExtResource("6_sw313")
+MinPitch = 0.8
+MaxPitch = 1.2
+MinDelayPlayback = 0.8
+MaxDelayPlayback = 10.0
 
 [connection signal="hurtingPlayer" from="." to="NavigationAgent3D" method="_on_cone_hurting_player"]
 [connection signal="navigation_finished" from="NavigationAgent3D" to="NavigationAgent3D" method="_on_navigation_finished"]
