@@ -7,3 +7,5 @@
 sacredlevels/
 sacredcode/
 sacredvoices/
+*.TMP
+*.tmp
